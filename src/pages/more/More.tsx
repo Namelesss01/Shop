@@ -1,8 +1,7 @@
 import { Settings } from "lucide-react";
 import Avatar_image from "@/assets/images/avatar-image.png";
 import Banner from "@/assets/images/banner-threads.png";
-import BurgerMenu from "../../shared/Burger_menu/burger_menu";
-
+import BurgerMenu from "../../shared/burger_menu/Burger_menu";
 const More = () => {
   return (
     <div className="container mx-auto max-w-[375px]">

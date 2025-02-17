@@ -7,12 +7,10 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
 
   return (
     <>
-      {/* Твоя иконка для открытия меню */}
       <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer z-50">
         {triggerIcon}
       </div>
 
-      {/* Затемнённый фон при открытии */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-40 transition-opacity ${
           isOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -20,7 +18,7 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
         onClick={() => setIsOpen(false)}
       ></div>
 
-      {/* Меню */}
+    
       <div
         className={`fixed top-0 right-0 w-72 h-full bg-white shadow-lg p-6 transform transition-transform ${
           isOpen ? "translate-x-0" : "translate-x-full"
