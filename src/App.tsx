@@ -1,8 +1,10 @@
 import { Button } from "./components/ui/button";
+import Home from "./pages/home/Home";
+
 function App() {
   return (
-    <div className="min-h-[100vh] mx-auto">
-      <Button>12345678</Button>
+    <div className="flex items-center justify-center">
+      <Home />
     </div>
   );
 }
