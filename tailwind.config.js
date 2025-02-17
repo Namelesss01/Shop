@@ -4,6 +4,10 @@ export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
   	extend: {
+			fontFamily: {
+				sans: ['Nunito Sans', 'sans-serif'],
+				raleway: ['Raleway', 'sans-serif']
+			},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
