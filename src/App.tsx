@@ -1,13 +1,10 @@
-import { Route, Routes } from "react-router-dom";
-import Favorites from "./pages/favorites/Favorites";
-import More from "./pages/more/More";
+import { Button } from "./components/ui/button";
+import Home from "./pages/home/Home";
+
 function App() {
   return (
-    <div className="min-h-[100vh] mx-auto">
-      <Routes>
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/more" element={<More />} />
-      </Routes>
+    <div className="flex items-center justify-center">
+      <Home />
     </div>
   );
 }

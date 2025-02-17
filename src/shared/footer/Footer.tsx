@@ -1,56 +1,60 @@
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { Home, Heart, ShoppingCart, CircleEllipsis } from "lucide-react"; // Импортируем иконки
 
 const Footer = () => {
+  const [activeButton, setActiveButton] = useState<string>("");
+
+  const handleClick = (button: string) => {
+    setActiveButton(button);
+  };
+
   return (
-    <div>
-      <footer className="bg-white p-4 mt-14 text-black mb-10">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 space-x-0 md:space-x-4 gap-10 text-center">
-            <li className="text-black font-black text-center ml-16 mr-20 md:ml-28">
-              Булунский портал
-            </li>
-            <li>
-              <Link to="/" className="hover:text-black text-[#76767A]">
-                Главная
-              </Link>
-            </li>
-            <li>
-              <Link to="/news" className="hover:text-black text-[#76767A]">
-                Новости
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/announcement"
-                className="hover:text-black text-[#76767A]"
-              >
-                Объявления
-              </Link>
-            </li>
-            <li>
-              <Link to="/transport" className="hover:text-black text-[#76767A]">
-                Транспорт
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/administration"
-                className="hover:text-black text-[#76767A]"
-              >
-                Администрация
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/archive-page"
-                className="hover:text-black text-[#76767A]"
-              >
-                Архив
-              </Link>
-            </li>
-          </ul>
+    <div className="w-full py-4 bg-white text-gray-200 fixed bottom-0 left-0">
+      <div className="flex justify-around items-center">
+        {/* Иконка Дом */}
+        <div
+          className={`flex flex-col items-center cursor-pointer ${
+            activeButton === "home" ? "text-purple-500" : ""
+          }`}
+          onClick={() => handleClick("home")}
+        >
+          <Home size={24} />
+          <span className="text-sm mt-2">Дом</span>
         </div>
-      </footer>
+
+        {/* Иконка Сердце */}
+        <div
+          className={`flex flex-col items-center cursor-pointer ${
+            activeButton === "favorite" ? "text-purple-500" : ""
+          }`}
+          onClick={() => handleClick("favorite")}
+        >
+          <Heart size={24} />
+          <span className="text-sm mt-2">Избранное</span>
+        </div>
+
+        {/* Иконка Корзина */}
+        <div
+          className={`flex flex-col items-center cursor-pointer ${
+            activeButton === "cart" ? "text-purple-500" : ""
+          }`}
+          onClick={() => handleClick("cart")}
+        >
+          <ShoppingCart size={24} />
+          <span className="text-sm mt-2">Корзина</span>
+        </div>
+
+        {/* Иконка Информация */}
+        <div
+          className={`flex flex-col items-center cursor-pointer ${
+            activeButton === "info" ? "text-purple-500" : ""
+          }`}
+          onClick={() => handleClick("info")}
+        >
+          <CircleEllipsis size={24} className="rotate-90" />
+          <span className="text-sm mt-2">ещё</span>
+        </div>
+      </div>
     </div>
   );
 };
