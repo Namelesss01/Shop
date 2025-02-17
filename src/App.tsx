@@ -1,12 +1,23 @@
-import { Button } from "./components/ui/button";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import Home from "./pages/home/Home";
+import Basket from "./pages/busket/Basket";
+import Footer from "./shared/footer/Footer";
+import More from "./pages/more/More";
+import Favorites from "./pages/favorites/Favorites";
 
-function App() {
+const App = () => {
   return (
-    <div className="flex items-center justify-center">
-      <Home />
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/basket" element={<Basket />} />
+        <Route path="/more" element={<More />} />
+        <Route path="/favorites" element={<Favorites />} />
+      </Routes>
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;

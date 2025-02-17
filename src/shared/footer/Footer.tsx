@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Home, Heart, ShoppingCart, CircleEllipsis } from "lucide-react"; // Импортируем иконки
+import { Link } from "react-router-dom"; // Импортируем Link из react-router-dom
 
 const Footer = () => {
   const [activeButton, setActiveButton] = useState<string>("");
@@ -12,7 +13,8 @@ const Footer = () => {
     <div className="w-full py-4 bg-white text-gray-200 fixed bottom-0 left-0">
       <div className="flex justify-around items-center">
         {/* Иконка Дом */}
-        <div
+        <Link
+          to="/" // Переход на главную страницу
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "home" ? "text-purple-500" : ""
           }`}
@@ -20,10 +22,11 @@ const Footer = () => {
         >
           <Home size={24} />
           <span className="text-sm mt-2">Дом</span>
-        </div>
+        </Link>
 
         {/* Иконка Сердце */}
-        <div
+        <Link
+          to="/favorites" // Переход на страницу "Избранное"
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "favorite" ? "text-purple-500" : ""
           }`}
@@ -31,10 +34,11 @@ const Footer = () => {
         >
           <Heart size={24} />
           <span className="text-sm mt-2">Избранное</span>
-        </div>
+        </Link>
 
         {/* Иконка Корзина */}
-        <div
+        <Link
+          to="/basket" // Переход на страницу "Корзина"
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "cart" ? "text-purple-500" : ""
           }`}
@@ -42,18 +46,19 @@ const Footer = () => {
         >
           <ShoppingCart size={24} />
           <span className="text-sm mt-2">Корзина</span>
-        </div>
+        </Link>
 
         {/* Иконка Информация */}
-        <div
+        <Link
+          to="/more" // Переход на страницу "Информация"
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "info" ? "text-purple-500" : ""
           }`}
           onClick={() => handleClick("info")}
         >
           <CircleEllipsis size={24} className="rotate-90" />
-          <span className="text-sm mt-2">ещё</span>
-        </div>
+          <span className="text-sm mt-2">Ещё</span>
+        </Link>
       </div>
     </div>
   );

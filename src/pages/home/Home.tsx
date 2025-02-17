@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import post from "../../assets/img/group7.jpg";
 import { Search } from "lucide-react";
 import { Input } from "../../components/ui/input";
-import Navigate from "../../shared/navigate/Navigate";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
 
