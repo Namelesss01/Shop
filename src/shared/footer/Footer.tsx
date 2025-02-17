@@ -38,7 +38,7 @@ const Footer = () => {
 
         {/* Иконка Корзина */}
         <Link
-          to="/cart" // Переход на страницу "Корзина"
+          to="/basket" // Переход на страницу "Корзина"
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "cart" ? "text-purple-500" : ""
           }`}
@@ -50,7 +50,7 @@ const Footer = () => {
 
         {/* Иконка Информация */}
         <Link
-          to="/info" // Переход на страницу "Информация"
+          to="/more" // Переход на страницу "Информация"
           className={`flex flex-col items-center cursor-pointer ${
             activeButton === "info" ? "text-purple-500" : ""
           }`}
