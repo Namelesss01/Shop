@@ -20,17 +20,19 @@ const More = () => {
           <BurgerMenu triggerIcon={<Settings />} />
         </div>
       </div>
-      <h1 className="font-bold text-[24px] color-[#202020] mb-5 font-raleway">
-        Производство одежды
-      </h1>
-      <img className="rounded-[5px] mb-6" src={Banner} alt="banner-treads" />
-      <h3 className="mb-2 font-raleway font-bold text-[18px] text-[#202020]">
-        Для Маркетплейсов
-      </h3>
-      <p className="max-w-[286px] font-normal text-[12px] text-[#000000] font-sans ">
-        Вы можете заказать у нас производство одежды на любой вкус. Большие и
-        малые партии. Для WB и OZON
-      </p>
+      <div className="w-full">
+        <h1 className="font-bold text-[24px] color-[#202020] mb-5 font-raleway">
+          Производство одежды
+        </h1>
+        <img className="rounded-[5px] mb-6" src={Banner} alt="banner-treads" />
+        <h3 className="mb-2 font-raleway font-bold text-[18px] text-[#202020]">
+          Для Маркетплейсов
+        </h3>
+        <p className="max-w-[286px] font-normal text-[12px] text-[#000000] font-sans ">
+          Вы можете заказать у нас производство одежды на любой вкус. Большие и
+          малые партии. Для WB и OZON
+        </p>
+      </div>
     </div>
   );
 };
