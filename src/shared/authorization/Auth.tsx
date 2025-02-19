@@ -8,7 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -103,12 +108,13 @@ export function Auth(props: LayoutProps) {
 
   return (
     <Dialog open={isOpen}>
+      <DialogTitle className="sr-only">Авторизация и Регистрация</DialogTitle>
       <DialogTrigger onClick={handleOpen} asChild>
         {props.children}
       </DialogTrigger>
       <DialogContent
         ref={dialogRef}
-        сlassName="flex justify-center items-center min-w-[462px] min-h-[380px] sm:max-w-[328px] max-h-[366px] mx-auto"
+        className="flex justify-center items-center min-w-[462px] min-h-[380px] sm:max-w-[328px] max-h-[366px] mx-auto"
       >
         <Tabs defaultValue="auth">
           <TabsList className="grid w-full grid-cols-2">
