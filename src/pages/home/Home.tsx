@@ -5,7 +5,7 @@ import Footer from "../../shared/footer/Footer";
 import Header from "../../shared/header/Header";
 
 const Home = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("Все");
+  const [selectedCategory] = useState<string>("Все");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -13,7 +13,7 @@ const Home = () => {
       <div>
         <img src={post} alt="" className="w-full" />
         <div className="mx-4">
-           <Header setSelectedCategory={setSelectedCategory}></Header>
+           <Header></Header>
           <Product selectedCategory={selectedCategory} />{" "}
           {/* Передаем категорию */}
         </div>
