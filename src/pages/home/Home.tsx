@@ -13,9 +13,7 @@ const Home = () => {
       <div>
         <img src={post} alt="" className="w-full" />
         <div className="mx-4">
-          <div className="mt-4 w-full flex relative">
            <Header setSelectedCategory={setSelectedCategory}></Header>
-          </div>
           <Product selectedCategory={selectedCategory} />{" "}
           {/* Передаем категорию */}
         </div>
