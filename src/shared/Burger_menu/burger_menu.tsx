@@ -1,13 +1,22 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Auth } from "../authorization/Auth";
 import BurgerMenuProps from "./type";
 import useAuthStatus from "../../hooks/useAuthStatus";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase/config";
 
 const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const { isLoggedIn } = useAuthStatus();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setIsOpen(false);
+    navigate("/");
+  };
 
   return (
     <>
@@ -32,16 +41,22 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-700">Аккаунт</h3>
           {isLoggedIn ? (
-            // Показываем "Профиль", если пользователь авторизован
-            <Link
-              to="/profile"
-              className="flex justify-between items-center py-2 text-gray-800 hover:text-blue-500"
-              onClick={() => setIsOpen(false)}
-            >
-              Профиль <span className="text-xl">›</span>
-            </Link>
+            <>
+              <Link
+                to="/Profile"
+                className="flex justify-between items-center py-2 text-gray-800 hover:text-blue-500"
+                onClick={() => setIsOpen(false)}
+              >
+                Профиль <span className="text-xl">›</span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="w-full mt-3 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+              >
+                Выйти
+              </button>
+            </>
           ) : (
-            // Показываем "Войти", если пользователь не авторизован
             <Auth>
               <Button>Войти</Button>
             </Auth>

@@ -5,6 +5,7 @@ import Basket from "./pages/busket/Basket";
 import Footer from "./shared/footer/Footer";
 import More from "./pages/more/More";
 import Favorites from "./pages/favorites/Favorites";
+import Profile from "./pages/profile/Profile";
 
 const App = () => {
   return (
@@ -14,6 +15,7 @@ const App = () => {
         <Route path="/basket" element={<Basket />} />
         <Route path="/more" element={<More />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       <Footer />
     </div>
