@@ -57,7 +57,7 @@ export function Auth(props: LayoutProps) {
     setError(loginError);
 
     if (res) {
-      navigate("/account");
+      navigate("/profile");
       return handleClose();
     }
 
@@ -76,7 +76,7 @@ export function Auth(props: LayoutProps) {
     setError(signupError as string);
 
     if (res) {
-      navigate("/account");
+      navigate("/profile");
       handleClose();
       return;
     }
