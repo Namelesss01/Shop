@@ -3,6 +3,7 @@ import post from "../../assets/img/group7.jpg";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
 import { Auth } from "../../shared/authorization/Auth";
+import Header from "../../shared/header/Header";
  
 const Home = () => {
   const [selectedCategory] = useState<string>("Все");
