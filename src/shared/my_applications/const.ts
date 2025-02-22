@@ -14,21 +14,21 @@ export const MY_APPLICATION_ITEMS: MyApplicationsProps[] = [
   {
     number: 512,
     time: "Сегодня 21:31",
-    photoURLs: [third],
+    photoURLs: [fourth, fifth, sixth, seventh, eighth],
     description: "Модная мужская куртка из натуральной кожи. Размеры: M, L, XL",
     category: "Мужской", // Категория товара
   },
   {
     number: 311,
     time: "Сегодня 22:00",
-    photoURLs: [third],
+    photoURLs: [third, fourth, fifth, sixth, seventh, eighth],
     description: "Элегантное вечернее платье для женщин.",
     category: "Женский", // Категория товара
   },
   {
     number: 123,
     time: "Сегодня 22:15",
-    photoURLs: [third],
+    photoURLs: [third, fourth, fifth, sixth, seventh, eighth],
     description: "Игрушка для детей младшего возраста.",
     category: "Детский", // Категория товара
   },

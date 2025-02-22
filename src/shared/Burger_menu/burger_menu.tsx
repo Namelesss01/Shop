@@ -1,21 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/button";
 import { Auth } from "../authorization/Auth";
-import BurgerMenuProps from "./type";
-import useAuthStatus from "../../hooks/useAuthStatus";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { auth, db } from "../../firebase/config";
 import { signOut } from "firebase/auth";
-import { auth } from "../../firebase/config";
+import useAuthStatus from "../../hooks/useAuthStatus";
 
-const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
+const BurgerMenu = ({ triggerIcon }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn } = useAuthStatus();
+  const { isLoggedIn, user } = useAuthStatus();
+  const [userData, setUserData] = useState({
+    isOfferAcknowledged: false,
+    isInstructionsAcknowledged: false,
+  });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      const fetchUserData = async () => {
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setUserData(userSnap.data());
+        }
+      };
+      fetchUserData();
+    }
+  }, [user]);
 
   const handleLogout = async () => {
     await signOut(auth);
     setIsOpen(false);
     navigate("/");
+  };
+
+  const acknowledge = async (field) => {
+    if (user) {
+      const userRef = doc(db, "users", user.uid);
+      await updateDoc(userRef, { [field]: true });
+      setUserData((prev) => ({ ...prev, [field]: true }));
+    }
   };
 
   return (
@@ -65,21 +90,36 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
 
         <div>
           <h3 className="text-lg font-semibold text-gray-700">Прочее</h3>
-          <Link
-            to="/offer"
-            className="flex justify-between items-center py-2 text-gray-800 hover:text-blue-500"
-            onClick={() => setIsOpen(false)}
-          >
-            Оферта <span className="text-green-600">Ознакомлен(а)</span>{" "}
-            <span className="text-xl">›</span>
-          </Link>
-          <Link
-            to="/instructions"
-            className="flex justify-between items-center py-2 text-gray-800 hover:text-blue-500"
-            onClick={() => setIsOpen(false)}
-          >
-            Инструкции <span className="text-xl">›</span>
-          </Link>
+          <div className="flex justify-between items-center py-2 text-gray-800">
+            <Link to="/offer" onClick={() => setIsOpen(false)}>
+              Оферта
+            </Link>
+            {userData.isOfferAcknowledged ? (
+              <span className="text-green-600">Ознакомлен(а)</span>
+            ) : (
+              <button
+                className="text-blue-500"
+                onClick={() => acknowledge("isOfferAcknowledged")}
+              >
+                Ознакомиться
+              </button>
+            )}
+          </div>
+          <div className="flex justify-between items-center py-2 text-gray-800">
+            <Link to="/instructions" onClick={() => setIsOpen(false)}>
+              Инструкции
+            </Link>
+            {userData.isInstructionsAcknowledged ? (
+              <span className="text-green-600">Ознакомлен(а)</span>
+            ) : (
+              <button
+                className="text-blue-500"
+                onClick={() => acknowledge("isInstructionsAcknowledged")}
+              >
+                Ознакомиться
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </>
