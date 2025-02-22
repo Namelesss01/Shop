@@ -5,7 +5,7 @@ import { Input } from "../../components/ui/input";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
 import { Auth } from "../../shared/authorization/Auth";
-
+ 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Все");
 
