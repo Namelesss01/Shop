@@ -77,13 +77,13 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
           </div>
         ) : (
           <div>
-            <button onClick={() => setCurrentSection(null)} className="text-xl text-gray-700 mb-6">
+            <button onClick={() => setCurrentSection(null)} className="text-xl text-gray-700 mb-4">
               ← Назад
             </button>
             <div className="mt-6">
               {ts.map((item: any) =>
                 item.link === currentSection ? (
-                  <div key={item.link}>
+                  <div className="mb-[200px]" key={item.link}>
                     <h3 className="text-lg font-semibold text-gray-700">{item.label}</h3>
                     <p>{item.text}</p>
                     {item.link === "offer" && !isOfferAcknowledged && isUserRegistered && (
@@ -94,9 +94,10 @@ const BurgerMenu = ({ triggerIcon }: BurgerMenuProps) => {
                         Ознакомлен
                       </button>
                     )}
-                    {/* If the user isn't registered */}
-                    {!isUserRegistered && (
-                      <div className="mt-4 text-red-600">Вы не зарегистрированы!</div>
+                    {item.link === "instructions" && !isUserRegistered && (
+                      <div>
+                        <span>{item.text2}</span>
+                      </div>
                     )}
                   </div>
                 ) : null
