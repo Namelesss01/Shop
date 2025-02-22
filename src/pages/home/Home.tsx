@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import post from "../../assets/img/group7.jpg";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
-import Header from "../../shared/header/Header";
-
+import { Auth } from "../../shared/authorization/Auth";
+ 
 const Home = () => {
   const [selectedCategory] = useState<string>("Все");
 
