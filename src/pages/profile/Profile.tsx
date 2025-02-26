@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
-import Ava from "@/assets/img/avatar.png";
+import Ava from "../../assets/img/avatar.png";
 import { Button } from "../../components/ui/button";
 import { X } from "lucide-react";
 
@@ -16,10 +16,11 @@ const Profile = () => {
     password: "",
     country: "",
     city: "",
+    avatar: Ava,
   });
   const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true); // Состояние загрузки
-  const [isEditing, setIsEditing] = useState<boolean>(false); // Состояние редактирования
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -36,11 +37,12 @@ const Profile = () => {
             password: data?.password || "",
             country: data?.country || "",
             city: data?.city || "",
+            avatar: data?.avatar || Ava,
           });
         }
-        setLoading(false); // Убираем состояние загрузки
+        setLoading(false);
       } else {
-        setLoading(false); // Убираем состояние загрузки, если пользователь не найден
+        setLoading(false);
       }
     };
 
@@ -59,49 +61,74 @@ const Profile = () => {
   };
 
   const handleEditClick = () => {
-    setIsEditing(true); // Включаем режим редактирования
+    setIsEditing(true);
   };
 
   const handleSaveClick = async () => {
     if (userId) {
-      await updateDoc(doc(db, "users", userId), userData); // Сохраняем изменения в БД
-      setIsEditing(false); // Отключаем режим редактирования
+      await updateDoc(doc(db, "users", userId), userData);
+      setIsEditing(false);
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isEditing) return; // Если редактирование запрещено, ничего не делать
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const newAvatar = reader.result as string;
+        setUserData((prev) => ({ ...prev, avatar: newAvatar }));
+        if (userId) {
+          await updateDoc(doc(db, "users", userId), { avatar: newAvatar });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleBackClick = () => {
-    navigate(-1); // Go back one page in history
+    navigate(-1);
   };
 
   if (loading) {
-    return <div>Загрузка...</div>; // Отображение индикатора загрузки, пока данные загружаются
+    return <div>Загрузка...</div>;
   }
 
   return (
-    <div className="max-w-sm mx-auto p-6 bg-white shadow-lg rounded-2xl mb-20">
+    <div className=" p-6 bg-white shadow-lg rounded-2xl mb-20">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold mb-1">Ваш профиль</h2>
+        <h2 className="text-2xl font-bold">Ваш профиль</h2>
         <button
           className="text-gray-500 hover:text-gray-800"
           onClick={handleBackClick}
         >
-          <X size={24} /> {/* Cross icon */}
+          <X size={24} />
         </button>
       </div>
       <span>Аватарка</span>
-      <div className="flex flex-col items-center mb-6">
-        <div className="mr-60 relative border-8 border-white rounded-full shadow-md w-24 h-24">
+      <div className="flex flex-col items-left mb-6">
+        <div className="relative border-8 border-white rounded-full shadow-md w-24 h-24">
           <img
-            src={Ava}
+            src={userData.avatar}
             alt="Аватарка"
             className="w-full h-full rounded-full object-cover"
           />
-          <button
-            className="absolute top-0 left-16 bg-purple-500 text-white p-1 rounded-full shadow-md"
-            onClick={handleEditClick} // Редактирование профиля
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="avatarInput"
+            onChange={handleAvatarChange}
+          />
+          <label
+            htmlFor="avatarInput"
+            className={`absolute top-0 left-16 bg-purple-500 text-white p-1 rounded-full shadow-md cursor-pointer ${
+              !isEditing ? "cursor-not-allowed opacity-50" : ""
+            }`}
           >
             <Pencil size={16} />
-          </button>
+          </label>
         </div>
       </div>
       <div className="space-y-4">
@@ -113,7 +140,7 @@ const Profile = () => {
           onBlur={handleBlur}
           placeholder="ФИО"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
-          disabled={!isEditing} // Если не в режиме редактирования, то поле заблокировано
+          disabled={!isEditing}
         />
         <input
           type="email"
@@ -123,7 +150,7 @@ const Profile = () => {
           onBlur={handleBlur}
           placeholder="Электронная почта"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
-          disabled={!isEditing} // Разрешить редактирование только при isEditing = true
+          disabled={!isEditing}
         />
         <input
           type="tel"
@@ -133,7 +160,7 @@ const Profile = () => {
           onBlur={handleBlur}
           placeholder="Номер для смс"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
-          disabled={!isEditing} // Если не в режиме редактирования, то поле заблокировано
+          disabled={!isEditing}
         />
         <input
           type="password"
@@ -143,7 +170,7 @@ const Profile = () => {
           onBlur={handleBlur}
           placeholder="Придумайте пароль"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
-          disabled={!isEditing} // Если не в режиме редактирования, то поле заблокировано
+          disabled={!isEditing}
         />
       </div>
       <h3 className="mt-5 font-medium">Адрес доставки</h3>
@@ -156,7 +183,7 @@ const Profile = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100 mb-5"
-          disabled={!isEditing} // Если не в режиме редактирования, то поле заблокировано
+          disabled={!isEditing}
         />
         <label className="block text-gray-700 mb-2">Город</label>
         <input
@@ -166,17 +193,15 @@ const Profile = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
-          disabled={!isEditing} // Если не в режиме редактирования, то поле заблокировано
+          disabled={!isEditing}
         />
       </div>
-      {isEditing && (
-        <Button
-          onClick={handleSaveClick}
-          className="mt-4 w-full py-2 text-white rounded-lg"
-        >
-          Сохранить
-        </Button>
-      )}
+      <Button
+        onClick={isEditing ? handleSaveClick : handleEditClick}
+        className="mt-4 w-full py-2 text-white rounded-lg"
+      >
+        {isEditing ? "Сохранить" : "Редактировать"}
+      </Button>
     </div>
   );
 };

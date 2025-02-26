@@ -5,19 +5,21 @@ import { PRODUCTS_ITEMS } from "./const";
 import { ProductProps } from "./type";
 
 const Product = () => {
-  const [activeButtons, setActiveButtons] = useState({
-    cart: false,
-    favorite: false,
-    other: false,
-  });
-
   const [selectedCategory, setSelectedCategory] = useState<string>("Все");
+  const [activeButtons, setActiveButtons] = useState<{
+    [key: string]: Set<string>;
+  }>({});
 
-  const handleClick = (button: string) => {
-    setActiveButtons((prevState) => ({
-      ...prevState,
-      [button]: !prevState[button],
-    }));
+  const handleClick = (productId: string, button: string) => {
+    setActiveButtons((prevState) => {
+      const updatedSet = new Set(prevState[productId] || []);
+      if (updatedSet.has(button)) {
+        updatedSet.delete(button);
+      } else {
+        updatedSet.add(button);
+      }
+      return { ...prevState, [productId]: updatedSet };
+    });
   };
 
   const filteredProducts = PRODUCTS_ITEMS.filter(
@@ -29,46 +31,19 @@ const Product = () => {
     <div className="mb-8">
       {/* Фильтрация товаров */}
       <div className="flex space-x-4 my-4">
-        <Button
-          onClick={() => setSelectedCategory("Все")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Все"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Все
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Мужской")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Мужской"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Мужской
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Женский")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Женский"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Женский
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Детский")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Детский"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Детский
-        </Button>
+        {["Все", "Мужской", "Женский", "Детский"].map((category) => (
+          <Button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`rounded-3xl px-4 py-2 ${
+              selectedCategory === category
+                ? "bg-purple-500 text-white"
+                : "bg-gray-300 text-black"
+            }`}
+          >
+            {category}
+          </Button>
+        ))}
       </div>
 
       {filteredProducts.map((product: ProductProps) => (
@@ -84,7 +59,6 @@ const Product = () => {
           </div>
           <p className="font-normal text-sm mb-3">{product.description}</p>
 
-          {/* Отображаем 8 изображений в 4 ряда по 4 изображения */}
           <div className="flex flex-wrap justify-between mt-4">
             {product.photoURLs.map((photoURL, index) => (
               <img
@@ -96,42 +70,29 @@ const Product = () => {
             ))}
           </div>
 
-          {/* Кнопки */}
           <div className="mt-4 flex space-x-2">
-            <Button
-              onClick={() => handleClick("cart")}
-              className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.cart
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              <ShoppingCart size={20} />
-              <span>В корзину</span>
-            </Button>
-
-            <Button
-              onClick={() => handleClick("favorite")}
-              className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.favorite
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              <Heart size={20} />
-              <span>В Избранное</span>
-            </Button>
-
-            <Button
-              onClick={() => handleClick("other")}
-              className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.other
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              <Forward size={20} />
-            </Button>
+            {["cart", "favorite", "other"].map((button) => (
+              <Button
+                key={button}
+                onClick={() => handleClick(product.id, button)}
+                className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
+                  activeButtons[product.id]?.has(button)
+                    ? "bg-purple-500 text-white"
+                    : "bg-gray-300 text-black"
+                }`}
+              >
+                {button === "cart" && <ShoppingCart size={20} />}
+                {button === "favorite" && <Heart size={20} />}
+                {button === "other" && <Forward size={20} />}
+                <span>
+                  {button === "cart"
+                    ? "В корзину"
+                    : button === "favorite"
+                    ? "В Избранное"
+                    : ""}
+                </span>
+              </Button>
+            ))}
           </div>
         </div>
       ))}
