@@ -5,6 +5,8 @@ import MyBasketProps from "./type";
 import { ShoppingCart, Heart, Forward } from "lucide-react";
 
 const MyBasket = () => {
+  const [basketItems, setBasketItems] =
+    useState<MyBasketProps[]>(MY_BASKET_ITEMS);
   const [activeButtons, setActiveButtons] = useState<{
     [key: number]: { cart: boolean; favorite: boolean; other: boolean };
   }>({});
@@ -19,9 +21,13 @@ const MyBasket = () => {
     }));
   };
 
+  const handleRemove = (id: number) => {
+    setBasketItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  };
+
   return (
     <div className="basket-container p-4">
-      {MY_BASKET_ITEMS.map((item: MyBasketProps) => (
+      {basketItems.map((item: MyBasketProps) => (
         <div
           key={item.id}
           className="basket-item flex gap-4 p-4 border rounded-lg shadow-md mb-4"
@@ -62,12 +68,8 @@ const MyBasket = () => {
                 <Forward size={20} />
               </Button>
               <Button
-                onClick={() => handleClick(item.id, "cart")}
-                className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                  activeButtons[item.id]?.cart
-                    ? "bg-purple-500 text-white"
-                    : "bg-gray-300 text-black"
-                }`}
+                onClick={() => handleRemove(item.id)}
+                className="rounded-3xl px-4 py-2 flex items-center space-x-2 bg-red-500 text-white transition-colors"
               >
                 <ShoppingCart size={20} />
                 <span>Удалить</span>
