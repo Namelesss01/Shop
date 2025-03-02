@@ -26,7 +26,7 @@
     "add": "^2.0.6",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "firebase": "^11.3.1",
+    "firebase": "^11.4.0",
     "lucide": "^0.441.0",
     "lucide-react": "^0.441.0",
     "radio-group": "^0.0.2",

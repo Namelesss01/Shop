@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Pencil } from "lucide-react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../../firebase/config";
 import Ava from "../../assets/img/avatar.png";
 import { Button } from "../../components/ui/button";
@@ -39,6 +39,10 @@ const Profile = () => {
             city: data?.city || "",
             avatar: data?.avatar || Ava,
           });
+        } else {
+          // Если пользователя нет, создаём новый документ
+          await setDoc(doc(db, "users", user.uid), userData);
+          setUserData({ ...userData, avatar: Ava });
         }
         setLoading(false);
       } else {
@@ -56,7 +60,15 @@ const Profile = () => {
 
   const handleBlur = async () => {
     if (userId) {
-      await updateDoc(doc(db, "users", userId), userData);
+      const userDocRef = doc(db, "users", userId);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        // Если документ существует, обновляем его
+        await updateDoc(userDocRef, userData);
+      } else {
+        // Если документа нет, создаём новый
+        await setDoc(userDocRef, userData);
+      }
     }
   };
 
@@ -66,7 +78,9 @@ const Profile = () => {
 
   const handleSaveClick = async () => {
     if (userId) {
-      await updateDoc(doc(db, "users", userId), userData);
+      const userDocRef = doc(db, "users", userId);
+      // Используем setDoc с merge: true для обновления данных пользователя
+      await setDoc(userDocRef, userData, { merge: true });
       setIsEditing(false);
     }
   };
@@ -80,7 +94,8 @@ const Profile = () => {
         const newAvatar = reader.result as string;
         setUserData((prev) => ({ ...prev, avatar: newAvatar }));
         if (userId) {
-          await updateDoc(doc(db, "users", userId), { avatar: newAvatar });
+          const userDocRef = doc(db, "users", userId);
+          await updateDoc(userDocRef, { avatar: newAvatar });
         }
       };
       reader.readAsDataURL(file);
@@ -96,7 +111,7 @@ const Profile = () => {
   }
 
   return (
-    <div className=" p-6 bg-white shadow-lg rounded-2xl mb-20">
+    <div className="p-6 bg-white shadow-lg rounded-2xl mb-20">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">Ваш профиль</h2>
         <button
@@ -158,7 +173,7 @@ const Profile = () => {
           value={userData.phone}
           onChange={handleChange}
           onBlur={handleBlur}
-          placeholder="Номер для смс"
+          placeholder="Телефон"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
           disabled={!isEditing}
         />
@@ -168,40 +183,38 @@ const Profile = () => {
           value={userData.password}
           onChange={handleChange}
           onBlur={handleBlur}
-          placeholder="Придумайте пароль"
+          placeholder="Пароль"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
           disabled={!isEditing}
         />
-      </div>
-      <h3 className="mt-5 font-medium">Адрес доставки</h3>
-      <div className="mt-5">
-        <label className="block text-gray-700 mb-2">Страна</label>
         <input
           type="text"
           name="country"
           value={userData.country}
           onChange={handleChange}
           onBlur={handleBlur}
-          className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100 mb-5"
+          placeholder="Страна"
+          className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
           disabled={!isEditing}
         />
-        <label className="block text-gray-700 mb-2">Город</label>
         <input
           type="text"
           name="city"
           value={userData.city}
           onChange={handleChange}
           onBlur={handleBlur}
+          placeholder="Город"
           className="w-full p-3 border border-gray-300 rounded-lg bg-purple-100"
           disabled={!isEditing}
         />
       </div>
-      <Button
-        onClick={isEditing ? handleSaveClick : handleEditClick}
-        className="mt-4 w-full py-2 text-white rounded-lg"
-      >
-        {isEditing ? "Сохранить" : "Редактировать"}
-      </Button>
+      <div className="flex justify-between items-center mt-6">
+        {isEditing ? (
+          <Button onClick={handleSaveClick}>Сохранить</Button>
+        ) : (
+          <Button onClick={handleEditClick}>Редактировать</Button>
+        )}
+      </div>
     </div>
   );
 };
