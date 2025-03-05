@@ -45,6 +45,6 @@ const Oferta = ({ closeBurgerMenu }: { closeBurgerMenu: () => void }) => {
       </div>
     </div>
   );
-};
+}; 
 
 export default Oferta;

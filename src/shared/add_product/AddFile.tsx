@@ -26,8 +26,9 @@ const AddFile = () => {
         reader.onloadend = async () => {
           filePreviews.push(reader.result as string); // Добавляем предварительный просмотр
 
-          // Загружаем файл в Firebase Storage
-          const storageRef = ref(storage, `products/${file.name}`);
+          // Создаем уникальный путь для каждой фотографии с ID товара
+          const productId = productId.toLowerCase().replace(/\s+/g, "-"); // Используем название продукта как ID
+          const storageRef = ref(storage, `products/${productId}/${file.name}`);
           const uploadTask = uploadBytesResumable(storageRef, file);
 
           uploadTask.on(
@@ -61,6 +62,9 @@ const AddFile = () => {
       // Добавление документа в Firestore
       const productsCollectionRef = collection(db, "products");
 
+      // Создаем уникальный ID для продукта
+      const productId = productName.toLowerCase().replace(/\s+/g, "-");
+
       await addDoc(productsCollectionRef, {
         name: productName,
         description,
@@ -70,6 +74,7 @@ const AddFile = () => {
         isFavorite: false,
         isShared: false,
         time: new Date().toLocaleString(),
+        productId, // Добавляем уникальный ID для продукта
       });
 
       alert("Продукт успешно добавлен!");
