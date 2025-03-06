@@ -6,58 +6,58 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../firebase/config";
 
 const MyBasket = () => {
-  // Получаем данные из Firestore
   const { documents, error } = useCollection("products");
-
-  // Состояние для списка товаров в корзине
   const [basketItems, setBasketItems] = useState<any[]>([]);
 
-  // Состояние для кнопок
-  const [activeButtons, setActiveButtons] = useState<{
-    [key: string]: { favorite: boolean; other: boolean };
-  }>({});
-
-  // Обновляем список товаров при загрузке данных
   useEffect(() => {
     if (documents) {
-      console.log("Загруженные данные:", documents); // Логируем загруженные данные
+      console.log("Загруженные данные:", documents);
       const filteredItems = documents.filter(
         (item) => item?.inBasket === true && item?.inBasket !== undefined
       );
-      console.log("Отфильтрованные товары в корзине:", filteredItems); // Логируем отфильтрованные товары
+      console.log("Отфильтрованные товары в корзине:", filteredItems);
       setBasketItems(filteredItems);
     }
   }, [documents]);
 
-  // Проверка на ошибки и загрузку
   if (error) return <p className="text-center text-red-500">Ошибка: {error}</p>;
   if (!documents)
     return <p className="text-center text-gray-500">Загрузка...</p>;
 
-  // Проверяем состояние перед рендером
-  console.log("basketItems перед рендером:", basketItems); // Проверяем содержимое корзины
+  console.log("basketItems перед рендером:", basketItems);
 
-  // Удаление товара из корзины
   const handleRemove = async (id: string) => {
     try {
       await updateDoc(doc(db, "products", id), { inBasket: false });
-      // Удаляем товар из списка в UI без перезагрузки страницы
       setBasketItems((prevItems) => prevItems.filter((item) => item.id !== id));
     } catch (err) {
       console.error("Ошибка при удалении товара:", err);
     }
   };
 
+  const handleFavoriteToggle = async (id: string, isFavorite: boolean) => {
+    try {
+      await updateDoc(doc(db, "products", id), { isFavorite: !isFavorite });
+    } catch (err) {
+      console.error("Ошибка при обновлении избранного:", err);
+    }
+  };
+
+  const handleShareToggle = async (id: string, isShared: boolean) => {
+    try {
+      await updateDoc(doc(db, "products", id), { isShared: !isShared });
+    } catch (err) {
+      console.error("Ошибка при обновлении статуса шаринга:", err);
+    }
+  };
+
   return (
-    <div className="basket-container p-4">
+    <div className="basket-container">
       {basketItems.length === 0 ? (
         <p className="text-center text-gray-500">Корзина пуста</p>
       ) : (
         basketItems.map((item) => (
-          <div
-            key={item.id}
-            className="basket-item flex gap-4 p-4 border rounded-lg shadow-md mb-4"
-          >
+          <div key={item.id} className="basket-item flex gap-4 mb-4">
             <img
               src={item.photoURLs?.[0] || "/placeholder.jpg"}
               alt={item.name || "Без названия"}
@@ -73,6 +73,26 @@ const MyBasket = () => {
                 {item.description}
               </p>
               <div className="flex gap-2 mt-3">
+                <Button
+                  onClick={() => handleFavoriteToggle(item.id, item.isFavorite)}
+                  className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
+                    item.isFavorite
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  <Heart size={20} />
+                </Button>
+                <Button
+                  onClick={() => handleShareToggle(item.id, item.isShared)}
+                  className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
+                    item.isShared
+                      ? "bg-purple-500 text-white"
+                      : "bg-gray-300 text-black"
+                  }`}
+                >
+                  <Forward size={20} />
+                </Button>
                 <Button
                   onClick={() => handleRemove(item.id)}
                   className="rounded-3xl px-4 py-2 flex items-center space-x-2 bg-red-500 text-white transition-colors"

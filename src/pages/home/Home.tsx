@@ -26,7 +26,7 @@ const Home = () => {
           {/* Передаем категорию */}
         </div>
       </div>
-
+      <div className="mt-20"></div>
       {/* Закрепленный Footer */}
       <Footer />
     </div>

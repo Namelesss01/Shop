@@ -95,12 +95,12 @@ const Product = () => {
           </div>
           <p className="text-sm mb-3">{product.description}</p>
 
-          <div className="flex flex-wrap justify-between mt-4">
+          <div className="flex flex-wrap mt-4">
             {product.photoURLs?.map((photoURL, index) => (
               <img
                 key={index}
                 src={photoURL}
-                className="w-[23%] mb-4 rounded-lg"
+                className="w-20 h-[100px] mb-4 mr-2"
                 alt={`Product ${product.id}`}
               />
             ))}

@@ -141,6 +141,7 @@ const AddFile = () => {
           {isLoading ? "Загрузка..." : "Добавить продукт"}
         </Button>
       </form>
+      <div className="mt-20"></div>
     </div>
   );
 };
