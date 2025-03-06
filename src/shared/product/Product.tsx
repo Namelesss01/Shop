@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useCollection } from "../../hooks/useCollection"; // Хук для получения данных из Firestore
-import { Button } from "../../components/ui/button"; // Компонент кнопки
-import { Heart, Forward } from "lucide-react"; // Иконки для кнопок
-import { doc, updateDoc } from "firebase/firestore"; // Firebase функции для обновления данных
-import { db } from "../../firebase/config"; // Конфигурация Firebase
-import { ShoppingCart } from "lucide-react"; // Добавить эту строку
-import { ref, getDownloadURL } from "firebase/storage"; // Импортируем getDownloadURL
-import { storage } from "../../firebase/config"; // Импортируем storage
+import { useCollection } from "../../hooks/useCollection";
+import { Button } from "../../components/ui/button";
+import { Heart, Forward, ShoppingCart } from "lucide-react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db, storage } from "../../firebase/config";
+import { ref, getDownloadURL } from "firebase/storage";
 
 const Product = () => {
   const { documents: products, error } = useCollection("products");
-  const [selectedCategory, setSelectedCategory] = useState<string>("Все");
-  const [productsWithUrls, setProductsWithUrls] = useState<any[]>([]); // Хранение продуктов с URL изображений
+  const [selectedCategory, setSelectedCategory] = useState("Все");
+  const [productsWithUrls, setProductsWithUrls] = useState([]);
 
   useEffect(() => {
     if (products) {
@@ -21,10 +19,12 @@ const Product = () => {
             if (product.photoURLs && product.photoURLs.length > 0) {
               try {
                 const photoURLs = await Promise.all(
-                  product.photoURLs.map(async (photoName: string) => {
-                    const photoRef = ref(storage, `products/${photoName}`);
-                    const url = await getDownloadURL(photoRef);
-                    return url;
+                  product.photoURLs.map(async (photoPath) => {
+                    if (photoPath.startsWith("http")) {
+                      return photoPath; // Если уже полный URL, возвращаем как есть
+                    }
+                    const photoRef = ref(storage, photoPath);
+                    return await getDownloadURL(photoRef);
                   })
                 );
                 return { ...product, photoURLs };
@@ -33,7 +33,7 @@ const Product = () => {
                   `Error fetching image for product ${product.id}:`,
                   error
                 );
-                return product; // Возвращаем продукт без обновленных фото
+                return product;
               }
             }
             return product;
@@ -47,24 +47,20 @@ const Product = () => {
   }, [products]);
 
   if (error) return <p>Ошибка: {error}</p>;
-  if (!productsWithUrls) return <p>Загрузка...</p>;
+  if (!productsWithUrls.length) return <p>Загрузка...</p>;
 
-  const handleBasketToggle = async (productId: string, inBasket: boolean) => {
-    const productRef = doc(db, "products", productId);
-    await updateDoc(productRef, { inBasket: !inBasket });
+  const handleBasketToggle = async (productId, inBasket) => {
+    await updateDoc(doc(db, "products", productId), { inBasket: !inBasket });
   };
 
-  const handleFavoriteToggle = async (
-    productId: string,
-    isFavorite: boolean
-  ) => {
-    const productRef = doc(db, "products", productId);
-    await updateDoc(productRef, { isFavorite: !isFavorite });
+  const handleFavoriteToggle = async (productId, isFavorite) => {
+    await updateDoc(doc(db, "products", productId), {
+      isFavorite: !isFavorite,
+    });
   };
 
-  const handleShareToggle = async (productId: string, isShared: boolean) => {
-    const productRef = doc(db, "products", productId);
-    await updateDoc(productRef, { isShared: !isShared });
+  const handleShareToggle = async (productId, isShared) => {
+    await updateDoc(doc(db, "products", productId), { isShared: !isShared });
   };
 
   const filteredProducts = productsWithUrls.filter(
@@ -74,7 +70,6 @@ const Product = () => {
 
   return (
     <div className="mb-8">
-      {/* Фильтр по категориям */}
       <div className="flex space-x-4 my-4">
         {["Все", "Мужской", "Женский", "Детский"].map((category) => (
           <Button
@@ -91,7 +86,6 @@ const Product = () => {
         ))}
       </div>
 
-      {/* Карточки товаров */}
       {filteredProducts.map((product) => (
         <div key={product.id} className="mb-8">
           <h1 className="font-semibold text-base">{product.name}</h1>
@@ -101,7 +95,6 @@ const Product = () => {
           </div>
           <p className="text-sm mb-3">{product.description}</p>
 
-          {/* Фотографии */}
           <div className="flex flex-wrap justify-between mt-4">
             {product.photoURLs?.map((photoURL, index) => (
               <img
@@ -113,9 +106,7 @@ const Product = () => {
             ))}
           </div>
 
-          {/* Кнопки */}
           <div className="mt-4 flex space-x-2">
-            {/* Кнопка "В корзину" */}
             <Button
               onClick={() => handleBasketToggle(product.id, product.inBasket)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
@@ -128,7 +119,6 @@ const Product = () => {
               <span>{product.inBasket ? "В корзине" : "В корзину"}</span>
             </Button>
 
-            {/* Кнопка "В избранное" */}
             <Button
               onClick={() =>
                 handleFavoriteToggle(product.id, product.isFavorite)
@@ -143,7 +133,6 @@ const Product = () => {
               <span>{product.isFavorite ? "Удалить" : "В избранное"}</span>
             </Button>
 
-            {/* Кнопка "Поделиться" */}
             <Button
               onClick={() => handleShareToggle(product.id, product.isShared)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
