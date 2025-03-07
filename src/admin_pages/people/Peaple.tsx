@@ -43,7 +43,7 @@ const Peaple = () => {
           <div className="w-full bg-white shadow-md rounded-2xl ml-4 mt-4">
             <div className="flex justify-between items-center">
               <p className="mt-6 ml-8">Данные</p>
-              <Button>Export to Excel</Button>
+              <Button className="mt-6 mr-8">Export to Excel</Button>
             </div>
             <div className="mt-4 bg-blue-600 p-2">
               <ul className="flex gap-14">
@@ -56,22 +56,24 @@ const Peaple = () => {
             </div>
             <div className="pb-4">
               <ul className="flex gap-28 mt-4">
-                <li className=" text-xs font-bold ml-[76px]">233</li>
-                <li className=" text-xs font-bold ml-[9px]">11</li>
-                <li className=" text-xs font-bold">11</li>
+                <li className=" text-xs ml-[76px]">233</li>
+                <li className=" text-xs ml-[25px]">11</li>
+                <li className=" text-xs">11</li>
               </ul>
             </div>
           </div>
           <div className="p-6 w-full bg-white shadow-md p-6 rounded-2xl ml-4 mt-4">
-            <h2 className="text-xl font-bold mb-4">Найдено: 110</h2>
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Поиск"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="p-2 border rounded w-full md:w-1/3"
-              />
+            <div className="mb-4 flex items-center justify-center gap-14">
+              <h2 className="text-xl font-medium mb-4">Найдено: 110</h2>
+              <div className="mb-4">
+                <input
+                  type="text"
+                  placeholder="Поиск"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="p-2 border rounded w-full"
+                />
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200">
