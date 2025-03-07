@@ -18,7 +18,7 @@ const menuItems = [
 
 const AdminAside = () => {
   return (
-    <aside className="w-64 bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl h-[472px]">
+    <aside className="w-64 bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl min-w-[256px] h-[472px]">
       <nav>
         <ul className="space-y-2">
           {menuItems.map((item, index) => (
