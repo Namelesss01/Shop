@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import post from "../../assets/img/group7.jpg";
-import { Search } from "lucide-react";
-import { Input } from "../../components/ui/input";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
 import { Auth } from "../../shared/authorization/Auth";
