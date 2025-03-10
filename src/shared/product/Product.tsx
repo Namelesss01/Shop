@@ -6,9 +6,8 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db, storage } from "../../firebase/config";
 import { ref, getDownloadURL } from "firebase/storage";
 
-const Product = () => {
+const Product = ({ selectedCategory, searchQuery }) => {
   const { documents: products, error } = useCollection("products");
-  const [selectedCategory, setSelectedCategory] = useState("Все");
   const [productsWithUrls, setProductsWithUrls] = useState([]);
 
   useEffect(() => {
@@ -63,13 +62,16 @@ const Product = () => {
     await updateDoc(doc(db, "products", productId), { isShared: !isShared });
   };
 
+  // Фильтрация продуктов по категории и тексту поиска
   const filteredProducts = productsWithUrls.filter(
     (product) =>
-      selectedCategory === "Все" || product.category === selectedCategory
+      (selectedCategory === "Все" || product.category === selectedCategory) &&
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Фильтрация по поисковому запросу
   );
 
   return (
     <div className="mb-8">
+      {/* Фильтрация по категориям */}
       <div className="flex space-x-4 my-4">
         {["Все", "Мужской", "Женский", "Детский"].map((category) => (
           <Button
@@ -86,6 +88,7 @@ const Product = () => {
         ))}
       </div>
 
+      {/* Отображение отфильтрованных продуктов */}
       {filteredProducts.map((product) => (
         <div key={product.id} className="mb-8">
           <h1 className="font-semibold text-base">{product.name}</h1>
