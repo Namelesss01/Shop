@@ -57,7 +57,15 @@ export function Auth(props: LayoutProps) {
     setError(loginError);
 
     if (res) {
-      navigate("/profile");
+      // Проверяем роль пользователя
+      const role = res.role; // Предположим, что роль хранится в поле `role`
+
+      if (role === "admin") {
+        navigate("/dashboard"); // Перенаправляем администратора на /dashboard
+      } else {
+        navigate("/"); // Перенаправляем обычного пользователя на /
+      }
+
       return handleClose();
     }
 
@@ -71,12 +79,13 @@ export function Auth(props: LayoutProps) {
       displayName,
       email,
       password,
+      role: "user", // Добавляем роль "user" по умолчанию
     });
 
     setError(signupError as string);
 
     if (res) {
-      navigate("/profile");
+      navigate("/"); // После регистрации перенаправляем на /
       handleClose();
       return;
     }
