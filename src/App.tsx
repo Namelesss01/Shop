@@ -6,6 +6,8 @@ import Footer from "./shared/footer/Footer";
 import More from "./pages/more/More";
 import Favorites from "./pages/favorites/Favorites";
 import Profile from "./pages/profile/Profile";
+import Oferta from "./shared/oferta/Oferta";
+import AddFile from "./shared/add_product/AddFile";
 
 const App = () => {
   return (
@@ -16,6 +18,8 @@ const App = () => {
         <Route path="/more" element={<More />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/oferta" element={<Oferta />} />
+        <Route path="/addfile" element={<AddFile />} />
       </Routes>
       <Footer />
     </div>

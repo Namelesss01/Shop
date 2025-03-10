@@ -1,131 +1,145 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useCollection } from "../../hooks/useCollection";
 import { Button } from "../../components/ui/button";
-import { ShoppingCart, Heart, Forward } from "lucide-react";
-import { PRODUCTS_ITEMS } from "./const";
-import { ProductProps } from "./type";
+import { Heart, Forward, ShoppingCart } from "lucide-react";
+import { doc, updateDoc } from "firebase/firestore";
+import { db, storage } from "../../firebase/config";
+import { ref, getDownloadURL } from "firebase/storage";
 
-const Product = () => {
-  const [activeButtons, setActiveButtons] = useState({
-    cart: false,
-    favorite: false,
-    other: false,
-  });
+const Product = ({ selectedCategory, searchQuery }) => {
+  const { documents: products, error } = useCollection("products");
+  const [productsWithUrls, setProductsWithUrls] = useState([]);
 
-  const [selectedCategory, setSelectedCategory] = useState<string>("Все");
+  useEffect(() => {
+    if (products) {
+      const fetchImageUrls = async () => {
+        const updatedProducts = await Promise.all(
+          products.map(async (product) => {
+            if (product.photoURLs && product.photoURLs.length > 0) {
+              try {
+                const photoURLs = await Promise.all(
+                  product.photoURLs.map(async (photoPath) => {
+                    if (photoPath.startsWith("http")) {
+                      return photoPath; // Если уже полный URL, возвращаем как есть
+                    }
+                    const photoRef = ref(storage, photoPath);
+                    return await getDownloadURL(photoRef);
+                  })
+                );
+                return { ...product, photoURLs };
+              } catch (error) {
+                console.error(
+                  `Error fetching image for product ${product.id}:`,
+                  error
+                );
+                return product;
+              }
+            }
+            return product;
+          })
+        );
+        setProductsWithUrls(updatedProducts);
+      };
 
-  const handleClick = (button: string) => {
-    setActiveButtons((prevState) => ({
-      ...prevState,
-      [button]: !prevState[button],
-    }));
+      fetchImageUrls();
+    }
+  }, [products]);
+
+  if (error) return <p>Ошибка: {error}</p>;
+  if (!productsWithUrls.length) return <p>Загрузка...</p>;
+
+  const handleBasketToggle = async (productId, inBasket) => {
+    await updateDoc(doc(db, "products", productId), { inBasket: !inBasket });
   };
 
-  const filteredProducts = PRODUCTS_ITEMS.filter(
+  const handleFavoriteToggle = async (productId, isFavorite) => {
+    await updateDoc(doc(db, "products", productId), {
+      isFavorite: !isFavorite,
+    });
+  };
+
+  const handleShareToggle = async (productId, isShared) => {
+    await updateDoc(doc(db, "products", productId), { isShared: !isShared });
+  };
+
+  // Фильтрация продуктов по категории и тексту поиска
+  const filteredProducts = productsWithUrls.filter(
     (product) =>
-      selectedCategory === "Все" || product.category === selectedCategory
+      (selectedCategory === "Все" || product.category === selectedCategory) &&
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Фильтрация по поисковому запросу
   );
 
   return (
     <div className="mb-8">
-      {/* Фильтрация товаров */}
+      {/* Фильтрация по категориям */}
       <div className="flex space-x-4 my-4">
-        <Button
-          onClick={() => setSelectedCategory("Все")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Все"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Все
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Мужской")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Мужской"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Мужской
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Женский")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Женский"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Женский
-        </Button>
-        <Button
-          onClick={() => setSelectedCategory("Детский")}
-          className={`rounded-3xl px-4 py-2 ${
-            selectedCategory === "Детский"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-300 text-black"
-          }`}
-        >
-          Детский
-        </Button>
+        {["Все", "Мужской", "Женский", "Детский"].map((category) => (
+          <Button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`rounded-3xl px-4 py-2 transition-colors ${
+              selectedCategory === category
+                ? "bg-purple-500 text-white"
+                : "bg-gray-300 text-black"
+            }`}
+          >
+            {category}
+          </Button>
+        ))}
       </div>
 
-      {filteredProducts.map((product: ProductProps) => (
+      {/* Отображение отфильтрованных продуктов */}
+      {filteredProducts.map((product) => (
         <div key={product.id} className="mb-8">
           <h1 className="font-semibold text-base">{product.name}</h1>
-          <div className="flex justify-between">
-            <span className="font-normal text-sm text-gray-400">
-              {product.time}
-            </span>
-            <span className="font-normal text-sm text-gray-400">
-              ID: {product.id}
-            </span>
+          <div className="flex justify-between text-sm text-gray-400">
+            <span>{product.time}</span>
+            <span>ID: {product.id}</span>
           </div>
-          <p className="font-normal text-sm mb-3">{product.description}</p>
+          <p className="text-sm mb-3">{product.description}</p>
 
-          {/* Отображаем 8 изображений в 4 ряда по 4 изображения */}
-          <div className="flex flex-wrap justify-between mt-4">
-            {product.photoURLs.map((photoURL, index) => (
+          <div className="flex flex-wrap mt-4">
+            {product.photoURLs?.map((photoURL, index) => (
               <img
                 key={index}
                 src={photoURL}
-                className="w-[23%] mb-4"
-                alt={`Product ${product.id} image ${index + 1}`}
+                className="w-20 h-[100px] mb-4 mr-2"
+                alt={`Product ${product.id}`}
               />
             ))}
           </div>
 
-          {/* Кнопки */}
           <div className="mt-4 flex space-x-2">
             <Button
-              onClick={() => handleClick("cart")}
+              onClick={() => handleBasketToggle(product.id, product.inBasket)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.cart
+                product.inBasket
                   ? "bg-purple-500 text-white"
                   : "bg-gray-300 text-black"
               }`}
             >
               <ShoppingCart size={20} />
-              <span>В корзину</span>
+              <span>{product.inBasket ? "В корзине" : "В корзину"}</span>
             </Button>
 
             <Button
-              onClick={() => handleClick("favorite")}
+              onClick={() =>
+                handleFavoriteToggle(product.id, product.isFavorite)
+              }
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.favorite
+                product.isFavorite
                   ? "bg-purple-500 text-white"
                   : "bg-gray-300 text-black"
               }`}
             >
               <Heart size={20} />
-              <span>В Избранное</span>
+              <span>{product.isFavorite ? "Удалить" : "В избранное"}</span>
             </Button>
 
             <Button
-              onClick={() => handleClick("other")}
+              onClick={() => handleShareToggle(product.id, product.isShared)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                activeButtons.other
+                product.isShared
                   ? "bg-purple-500 text-white"
                   : "bg-gray-300 text-black"
               }`}

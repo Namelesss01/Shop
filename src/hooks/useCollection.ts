@@ -1,47 +1,29 @@
-import { useEffect, useRef, useState } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
 
-export const useCollection = (collectionName, _query, _order) => {
+export const useCollection = (collectionName) => {
   const [documents, setDocuments] = useState(null);
   const [error, setError] = useState(null);
 
-  let unsub;
-
-  const queryRef = useRef(_query).current;
-  const orderRef = useRef(_order).current;
-
-  const fetchCollection = ({ fetchQuery, fetchOrder }) => {
-    setDocuments(null);
-    let ref = collection(db, collectionName);
-
-    if (queryRef) {
-      ref = query(ref, fetchQuery ?? queryRef); // Фильтрация
-    }
-
-    if (orderRef) {
-      ref = query(ref, fetchOrder ?? orderRef); // Отсортируй по полю createdAt
-    }
-
-    unsub = onSnapshot(ref, (snapshot) => {
-      let results = [];
-
-      snapshot.docs.forEach((doc) => {
-        results.push({ ...doc.data(), id: doc.id });
-      });
-
-      setDocuments(results);
-      setError(null);
-    });
-  };
-
   useEffect(() => {
-    fetchCollection({});
+    const fetchCollection = async () => {
+      try {
+        const ref = collection(db, collectionName);
+        const snapshot = await getDocs(ref);
+        const results = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
 
-    return () => {
-      unsub?.();
+        setDocuments(results);
+      } catch (err) {
+        setError("Ошибка загрузки данных: " + err.message);
+      }
     };
-  }, [collectionName, queryRef, orderRef]);
 
-  return { documents, error, fetchCollection };
+    fetchCollection();
+  }, [collectionName]);
+
+  return { documents, error };
 };

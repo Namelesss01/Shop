@@ -91,7 +91,7 @@ const BurgerMenu = ({ triggerIcon }) => {
         <div>
           <h3 className="text-lg font-semibold text-gray-700">Прочее</h3>
           <div className="flex justify-between items-center py-2 text-gray-800">
-            <Link to="/offer" onClick={() => setIsOpen(false)}>
+            <Link to="/oferta" onClick={() => setIsOpen(false)}>
               Оферта
             </Link>
             {userData.isOfferAcknowledged ? (

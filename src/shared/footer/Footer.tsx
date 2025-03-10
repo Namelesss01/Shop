@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Home, Heart, ShoppingCart, CircleEllipsis } from "lucide-react"; // Импортируем иконки
-import { Link } from "react-router-dom"; // Импортируем Link из react-router-dom
+import { Link, useLocation } from "react-router-dom"; // Импортируем Link и useLocation из react-router-dom
 
 const Footer = () => {
-  const [activeButton, setActiveButton] = useState<string>("");
+  const location = useLocation(); // Получаем текущий путь
 
-  const handleClick = (button: string) => {
-    setActiveButton(button);
+  // Функция для определения активной кнопки
+  const getActiveButton = (path: string) => {
+    return location.pathname === path ? "text-purple-500" : "";
   };
 
   return (
@@ -15,10 +16,7 @@ const Footer = () => {
         {/* Иконка Дом */}
         <Link
           to="/" // Переход на главную страницу
-          className={`flex flex-col items-center cursor-pointer ${
-            activeButton === "home" ? "text-purple-500" : ""
-          }`}
-          onClick={() => handleClick("home")}
+          className={`flex flex-col items-center cursor-pointer ${getActiveButton("/")}`}
         >
           <Home size={24} />
           <span className="text-sm mt-2">Дом</span>
@@ -27,10 +25,7 @@ const Footer = () => {
         {/* Иконка Сердце */}
         <Link
           to="/favorites" // Переход на страницу "Избранное"
-          className={`flex flex-col items-center cursor-pointer ${
-            activeButton === "favorite" ? "text-purple-500" : ""
-          }`}
-          onClick={() => handleClick("favorite")}
+          className={`flex flex-col items-center cursor-pointer ${getActiveButton("/favorites")}`}
         >
           <Heart size={24} />
           <span className="text-sm mt-2">Избранное</span>
@@ -39,10 +34,7 @@ const Footer = () => {
         {/* Иконка Корзина */}
         <Link
           to="/basket" // Переход на страницу "Корзина"
-          className={`flex flex-col items-center cursor-pointer ${
-            activeButton === "cart" ? "text-purple-500" : ""
-          }`}
-          onClick={() => handleClick("cart")}
+          className={`flex flex-col items-center cursor-pointer ${getActiveButton("/basket")}`}
         >
           <ShoppingCart size={24} />
           <span className="text-sm mt-2">Корзина</span>
@@ -51,10 +43,7 @@ const Footer = () => {
         {/* Иконка Информация */}
         <Link
           to="/more" // Переход на страницу "Информация"
-          className={`flex flex-col items-center cursor-pointer ${
-            activeButton === "info" ? "text-purple-500" : ""
-          }`}
-          onClick={() => handleClick("info")}
+          className={`flex flex-col items-center cursor-pointer ${getActiveButton("/more")}`}
         >
           <CircleEllipsis size={24} className="rotate-90" />
           <span className="text-sm mt-2">Ещё</span>
