@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import post from "../../assets/img/group7.jpg";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
+import { Search } from "lucide-react";
 import { Auth } from "../../shared/authorization/Auth";
+import { Input } from "../../components/ui/input";
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Все");
@@ -28,7 +30,11 @@ const Home = () => {
               onChange={handleSearch} // Функция для обновления searchQuery
             />
           </div>
-          <Product selectedCategory={selectedCategory} searchQuery={searchQuery} /> {/* Передаем searchQuery */}
+          <Product
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+          />{" "}
+          {/* Передаем searchQuery */}
         </div>
       </div>
       <div className="mt-20"></div>

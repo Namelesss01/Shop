@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AdminAside from "../../shared/admin_aside/AdminAside";
 import AdminHeader from "../../shared/admin_header/AdminHeader";
 import {
@@ -14,6 +14,8 @@ import {
   Cell,
 } from "recharts";
 import { Separator } from "../../components/ui/separator";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../../firebase/config"; // Импортируйте ваш конфиг Firebase
 
 const data = [
   { year: "2016", Россия: 200, Казахстан: 100, Другие: 50 },
@@ -30,6 +32,38 @@ const pieData = [
 ];
 
 const Dashboard = () => {
+  const [activeAdmins, setActiveAdmins] = useState<number>(0);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+
+  // Функция для получения данных о пользователях из Firestore
+  const fetchUsers = async () => {
+    try {
+      // Получаем всех пользователей
+      const usersCollection = collection(db, "users");
+      const usersSnapshot = await getDocs(usersCollection);
+      const users = usersSnapshot.docs.map((doc) => doc.data());
+
+      // Фильтруем активных администраторов
+      const activeAdminsCount = users.filter(
+        (user) => user.role === "admin" && user.isActive
+      ).length;
+
+      // Общее количество пользователей
+      const totalUsersCount = users.length;
+
+      // Обновляем состояние
+      setActiveAdmins(activeAdminsCount);
+      setTotalUsers(totalUsersCount);
+    } catch (error) {
+      console.error("Ошибка при загрузке данных пользователей:", error);
+    }
+  };
+
+  // Загружаем данные при монтировании компонента
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
     <div className="mb-40">
       <AdminHeader />
@@ -110,14 +144,14 @@ const Dashboard = () => {
         <h2 className="text-xl font-bold">Активны сейчас</h2>
         <p className="text-gray-500 font-normal text-center mt-11">Admin</p>
         <p className="text-black text-center text-6xl font-medium mb-10 mt-3">
-          3
+          {activeAdmins} {/* Отображаем количество активных администраторов */}
         </p>
         <Separator className="h-1 w-1000px bg-[#2F80ED]" />
         <p className="text-gray-500 font-normal text-center mt-10">
           Пользователей
         </p>
         <p className="text-black text-center text-6xl font-medium mb-10 mt-3">
-          135
+          {totalUsers} {/* Отображаем общее количество пользователей */}
         </p>
       </div>
     </div>
