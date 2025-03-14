@@ -58,8 +58,27 @@ const Product = ({ selectedCategory, searchQuery }) => {
     });
   };
 
-  const handleShareToggle = async (productId, isShared) => {
-    await updateDoc(doc(db, "products", productId), { isShared: !isShared });
+  const handleShareToggle = async (productId, product) => {
+    // Формируем корректную ссылку на продукт
+    const productLink = `https://yourwebsite.com/products/${productId}`; // Убедитесь, что это правильный путь
+    const message = `Проверьте этот продукт: ${productLink}`;
+
+    console.log("Sharing product link:", productLink); // Логируем ссылку для отладки
+
+    if (navigator.share) {
+      try {
+        // Открываем диалоговое окно выбора приложения для обмена
+        await navigator.share({
+          title: product.name,
+          text: message,
+          url: productLink,
+        });
+      } catch (error) {
+        console.error("Ошибка при попытке использовать share API", error);
+      }
+    } else {
+      alert("Ваш браузер не поддерживает функцию share.");
+    }
   };
 
   // Фильтрация продуктов по категории и тексту поиска
@@ -137,7 +156,7 @@ const Product = ({ selectedCategory, searchQuery }) => {
             </Button>
 
             <Button
-              onClick={() => handleShareToggle(product.id, product.isShared)}
+              onClick={() => handleShareToggle(product.id, product)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
                 product.isShared
                   ? "bg-purple-500 text-white"
@@ -145,6 +164,7 @@ const Product = ({ selectedCategory, searchQuery }) => {
               }`}
             >
               <Forward size={20} />
+              <span>{product.isShared ? "Отправить" : "Поделиться"}</span>
             </Button>
           </div>
         </div>
