@@ -169,7 +169,7 @@ const BuyList = () => {
   return (
     <div className="">
       <AdminHeader />
-      <div className="flex p-6">
+      <div className="flex">
         <AdminAside />
 
         <div className="flex-1">

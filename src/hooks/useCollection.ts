@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
+import { useEffect, useState } from "react";
 
-export const useCollection = (collectionName) => {
-  const [documents, setDocuments] = useState(null);
-  const [error, setError] = useState(null);
+// Хук для получения коллекции
+export const useCollection = (collectionName: string) => {
+  const [documents, setDocuments] = useState<any[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -17,7 +18,7 @@ export const useCollection = (collectionName) => {
         }));
 
         setDocuments(results);
-      } catch (err) {
+      } catch (err: any) {
         setError("Ошибка загрузки данных: " + err.message);
       }
     };
@@ -26,4 +27,20 @@ export const useCollection = (collectionName) => {
   }, [collectionName]);
 
   return { documents, error };
+};
+
+// Хук для добавления документа в коллекцию
+export const useAddDocument = (collectionName: string) => {
+  const [error, setError] = useState<string | null>(null);
+
+  const addDocument = async (document: any) => {
+    try {
+      const ref = collection(db, collectionName);
+      await addDoc(ref, document);
+    } catch (err: any) {
+      setError("Ошибка при добавлении документа: " + err.message);
+    }
+  };
+
+  return { addDocument, error };
 };

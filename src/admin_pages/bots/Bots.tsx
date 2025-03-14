@@ -36,10 +36,9 @@ const Bots = () => {
   return (
     <div className="">
       <AdminHeader />
-      <div className="flex p-6">
+      <div className="flex">
         <AdminAside />
         <div>
-          
           <div>whatsapp</div>
           <div className="bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl">
             <h1 className="text-2xl font-bold mb-4">Текущие соединения</h1>
@@ -83,7 +82,7 @@ const Bots = () => {
                 ))}
               </tbody>
             </table>
-          </div>  
+          </div>
         </div>
       </div>
     </div>

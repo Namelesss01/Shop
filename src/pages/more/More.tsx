@@ -3,6 +3,7 @@ import Avatar_image from "@/assets/images/avatar-image.png";
 import Banner from "@/assets/images/banner-threads.png";
 import BurgerMenu from "../../shared/burger_menu/Burger_menu";
 import { MORE_PAGES } from "./const";
+
 const More = () => {
   return (
     <div className="container mx-4 w-full">
@@ -17,7 +18,7 @@ const More = () => {
             Быстрая связь
           </button>
         </div>
-        <div className="mt-2">
+        <div className="mt-2 mr-10">
           <BurgerMenu triggerIcon={<Settings />} />
         </div>
       </div>
@@ -47,7 +48,7 @@ const More = () => {
           Услуги
         </h2>
         {MORE_PAGES.map((item) => (
-          <div className="flex items-center mb-7 w-full">
+          <div key={item.id} className="flex items-center mb-7 w-full">
             <img
               className="mr-4 rounded-[5px]"
               src={item.img}

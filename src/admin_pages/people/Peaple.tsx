@@ -16,9 +16,9 @@ import {
   PaginationPrevious,
   PaginationNext,
 } from "../../components/ui/pagination";
-import { useCollection } from "../../hooks/useCollection"; // Хук для получения коллекции
-import { useFirestore } from "../../hooks/useFirestore"; // Хук для работы с Firestore
-import { auth, db } from "../../firebase/config"; // Импорт Firebase
+import { useCollection } from "../../hooks/useCollection";
+import { useFirestore } from "../../hooks/useFirestore";
+import { auth, db } from "../../firebase/config";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import {
   doc,
@@ -28,9 +28,25 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import * as XLSX from "xlsx";
+
+interface User {
+  id?: string;
+  displayName: string;
+  email: string;
+  role: string;
+  country?: string;
+  phone?: string;
+  social?: string;
+  startDate?: string;
+  comment?: string;
+  position?: string;
+  rights?: string;
+  date?: string;
+  status?: string;
+}
 
 const People = () => {
-  // Состояния для формы добавления пользователя
   const [formData, setFormData] = useState({
     displayName: "",
     login: "",
@@ -38,13 +54,12 @@ const People = () => {
     confirmPassword: "",
     role: "admin",
     comment: "",
-    position: "", // Должность
-    rights: "", // Права
-    phone: "", // Номер телефона
-    date: new Date().toLocaleDateString(), // Дата регистрации (по умолчанию текущая дата)
+    position: "",
+    rights: "",
+    phone: "",
+    date: new Date().toLocaleDateString(),
   });
 
-  // Состояния для поиска и фильтрации
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     country: "RU",
@@ -52,20 +67,13 @@ const People = () => {
     interactions: ["cart", "favorites"],
   });
 
-  // Состояния для пагинации
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [admins, setAdmins] = useState<User[]>([]);
 
-  // Состояние для списка администраторов
-  const [admins, setAdmins] = useState([]);
-
-  // Хук для получения данных из Firestore
   const { documents: allData, error } = useCollection("users");
-
-  // Хук для работы с Firestore (добавление, удаление, обновление)
   const { addDocument, deleteDocument, updateDocument } = useFirestore("users");
 
-  // Эффект для загрузки администраторов
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
@@ -74,7 +82,7 @@ const People = () => {
         const adminList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        }));
+        })) as User[];
         setAdmins(adminList);
       } catch (error) {
         console.error("Ошибка загрузки админов:", error);
@@ -82,9 +90,8 @@ const People = () => {
     };
 
     fetchAdmins();
-  }, []);
+  }, [allData]);
 
-  // Обработчик изменения формы
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -93,7 +100,6 @@ const People = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Обработчик отправки формы
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -102,7 +108,6 @@ const People = () => {
     }
 
     try {
-      // Создание пользователя в Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         formData.login,
@@ -110,16 +115,15 @@ const People = () => {
       );
       const user = userCredential.user;
 
-      // Запись данных в Firestore
       await setDoc(doc(db, "users", user.uid), {
         displayName: formData.displayName,
         email: formData.login,
         role: formData.role,
         comment: formData.comment,
-        position: formData.position, // Должность
-        rights: formData.rights, // Права
-        phone: formData.phone, // Номер телефона
-        date: formData.date, // Дата регистрации
+        position: formData.position,
+        rights: formData.rights,
+        phone: formData.phone,
+        date: formData.date,
         isActive: true,
       });
 
@@ -131,42 +135,52 @@ const People = () => {
         confirmPassword: "",
         role: "admin",
         comment: "",
-        position: "", // Сброс должности
-        rights: "", // Сброс прав
-        phone: "", // Сброс номера телефона
-        date: new Date().toLocaleDateString(), // Сброс даты
+        position: "",
+        rights: "",
+        phone: "",
+        date: new Date().toLocaleDateString(),
       });
     } catch (error: any) {
       alert("Ошибка: " + error.message);
     }
   };
 
-  // Обработчик добавления нового пользователя
   const handleAddUser = async () => {
-    const newUser = {
-      name: "Новый пользователь",
-      email: "newuser@example.com",
-      location: "RU",
-      phone: "+7 (123) 456-78-90",
-      social: "Twitter",
-      startDate: new Date().toLocaleDateString(),
-    };
+    try {
+      const newUser = {
+        name: "Новый пользователь",
+        email: "newuser@example.com",
+        location: "RU",
+        phone: "+7 (123) 456-78-90",
+        social: "Twitter",
+        startDate: new Date().toLocaleDateString(),
+      };
 
-    await addDocument(newUser); // Добавляем пользователя в коллекцию
+      await addDocument(newUser);
+      alert("Пользователь успешно добавлен!");
+    } catch (error) {
+      console.error("Ошибка при добавлении пользователя:", error);
+      alert("Ошибка при добавлении пользователя.");
+    }
   };
 
-  // Фильтрация и пагинация
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const exportToExcel = () => {
+    const maxLength = 32767; // Максимальная длина текста для Excel
+    const dataToExport = filteredData.map((user) => {
+      return {
+        ...user,
+        comment: user.comment ? user.comment.substring(0, maxLength) : "", // Обрезаем комментарий
+        // Добавьте другие поля, если они могут содержать длинный текст
+      };
+    });
 
-  // Фильтруем данные, чтобы исключить администраторов
-  const filteredData = allData
-    ? allData.filter((user) => user.role !== "admin")
-    : [];
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Пользователи");
+    XLSX.writeFile(wb, "Пользователи.xlsx");
+  };
 
-  // Обработчик изменения фильтров
-  const toggleFilter = (category, value) => {
+  const toggleFilter = (category: string, value: string) => {
     setFilters((prev) => {
       if (Array.isArray(prev[category])) {
         return {
@@ -180,7 +194,19 @@ const People = () => {
     });
   };
 
-  // Если данные загружаются или произошла ошибка
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const filteredData = allData
+    ? allData.filter(
+        (user) =>
+          user.role !== "admin" &&
+          (user.displayName?.toLowerCase().includes(search.toLowerCase()) ||
+            user.email?.toLowerCase().includes(search.toLowerCase()) ||
+            user.phone?.toLowerCase().includes(search.toLowerCase()))
+      )
+    : [];
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
   if (error) {
     return <div>Ошибка загрузки данных: {error}</div>;
   }
@@ -231,13 +257,13 @@ const People = () => {
           <Tabs defaultValue="users" className="w-full max-w-4xl">
             <TabsList>
               <TabsTrigger value="users">Список пользователей</TabsTrigger>
-              <TabsTrigger value="settings">Настройки</TabsTrigger>
+              <TabsTrigger value="settings">Админы</TabsTrigger>
             </TabsList>
             <TabsContent value="users">
               <div className="w-full bg-white shadow-md rounded-2xl p-6 mb-5">
                 <div className="flex justify-between items-center">
                   <p className="text-lg font-bold">Данные</p>
-                  <Button onClick={handleAddUser}>Добавить пользователя</Button>
+                  <Button onClick={exportToExcel}>Export to Excel</Button>
                 </div>
 
                 <div className="mt-4 bg-blue-600 p-2">
@@ -322,6 +348,7 @@ const People = () => {
                         onClick={() =>
                           setCurrentPage((prev) => Math.max(prev - 1, 1))
                         }
+                        disabled={currentPage === 1}
                       />
                     </PaginationItem>
                     {[
@@ -331,6 +358,7 @@ const People = () => {
                         <PaginationLink
                           href="#"
                           onClick={() => setCurrentPage(i + 1)}
+                          isActive={currentPage === i + 1}
                         >
                           {i + 1}
                         </PaginationLink>
@@ -347,14 +375,25 @@ const People = () => {
                             )
                           )
                         }
+                        disabled={
+                          currentPage ===
+                          Math.ceil(filteredData.length / itemsPerPage)
+                        }
                       />
                     </PaginationItem>
                     <PaginationItem>
-                      <Button
-                        onClick={() => setItemsPerPage(filteredData.length)}
+                      <select
+                        value={itemsPerPage}
+                        onChange={(e) =>
+                          setItemsPerPage(Number(e.target.value))
+                        }
+                        className="p-2 border rounded"
                       >
-                        Показать все
-                      </Button>
+                        <option value={5}>5</option>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={filteredData.length}>All</option>
+                      </select>
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>
