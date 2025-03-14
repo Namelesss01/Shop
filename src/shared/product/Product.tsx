@@ -9,6 +9,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 const Product = ({ selectedCategory, searchQuery }) => {
   const { documents: products, error } = useCollection("products");
   const [productsWithUrls, setProductsWithUrls] = useState([]);
+  const [selectedCategoryState, setSelectedCategory] = useState(selectedCategory);
 
   useEffect(() => {
     if (products) {
@@ -49,13 +50,37 @@ const Product = ({ selectedCategory, searchQuery }) => {
   if (!productsWithUrls.length) return <p>Загрузка...</p>;
 
   const handleBasketToggle = async (productId, inBasket) => {
-    await updateDoc(doc(db, "products", productId), { inBasket: !inBasket });
+    // Обновляем состояние кнопки сразу
+    const updatedProducts = productsWithUrls.map((product) =>
+      product.id === productId ? { ...product, inBasket: !inBasket } : product
+    );
+    setProductsWithUrls(updatedProducts); // Обновляем UI немедленно
+
+    // Обновляем данные в Firebase
+    try {
+      await updateDoc(doc(db, "products", productId), {
+        inBasket: !inBasket,
+      });
+    } catch (error) {
+      console.error("Ошибка при обновлении корзины:", error);
+    }
   };
 
   const handleFavoriteToggle = async (productId, isFavorite) => {
-    await updateDoc(doc(db, "products", productId), {
-      isFavorite: !isFavorite,
-    });
+    // Обновляем состояние кнопки сразу
+    const updatedProducts = productsWithUrls.map((product) =>
+      product.id === productId ? { ...product, isFavorite: !isFavorite } : product
+    );
+    setProductsWithUrls(updatedProducts); // Обновляем UI немедленно
+
+    // Обновляем данные в Firebase
+    try {
+      await updateDoc(doc(db, "products", productId), {
+        isFavorite: !isFavorite,
+      });
+    } catch (error) {
+      console.error("Ошибка при обновлении избранного:", error);
+    }
   };
 
   const handleShareToggle = async (productId, product) => {
@@ -84,7 +109,7 @@ const Product = ({ selectedCategory, searchQuery }) => {
   // Фильтрация продуктов по категории и тексту поиска
   const filteredProducts = productsWithUrls.filter(
     (product) =>
-      (selectedCategory === "Все" || product.category === selectedCategory) &&
+      (selectedCategoryState === "Все" || product.category === selectedCategoryState) &&
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) // Фильтрация по поисковому запросу
   );
 
@@ -97,7 +122,7 @@ const Product = ({ selectedCategory, searchQuery }) => {
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`rounded-3xl px-4 py-2 transition-colors ${
-              selectedCategory === category
+              selectedCategoryState === category
                 ? "bg-purple-500 text-white"
                 : "bg-gray-300 text-black"
             }`}
@@ -132,23 +157,17 @@ const Product = ({ selectedCategory, searchQuery }) => {
             <Button
               onClick={() => handleBasketToggle(product.id, product.inBasket)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                product.inBasket
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
+                product.inBasket ? "bg-purple-500 text-white" : "bg-gray-300 text-black"
               }`}
             >
               <ShoppingCart size={20} />
-              <span>{product.inBasket ? "В корзине" : "В корзину"}</span>
+              <span>{product.inBasket ? "Удалить из корзины" : "В корзину"}</span>
             </Button>
 
             <Button
-              onClick={() =>
-                handleFavoriteToggle(product.id, product.isFavorite)
-              }
+              onClick={() => handleFavoriteToggle(product.id, product.isFavorite)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                product.isFavorite
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
+                product.isFavorite ? "bg-purple-500 text-white" : "bg-gray-300 text-black"
               }`}
             >
               <Heart size={20} />
@@ -158,9 +177,7 @@ const Product = ({ selectedCategory, searchQuery }) => {
             <Button
               onClick={() => handleShareToggle(product.id, product)}
               className={`rounded-3xl px-4 py-2 flex items-center space-x-2 transition-colors ${
-                product.isShared
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-300 text-black"
+                product.isShared ? "bg-purple-500 text-white" : "bg-gray-300 text-black"
               }`}
             >
               <Forward size={20} />
