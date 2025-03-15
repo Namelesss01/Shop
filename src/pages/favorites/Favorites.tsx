@@ -49,17 +49,52 @@ const Favorites = () => {
   if (!productsWithUrls.length) return <p>Загрузка...</p>;
 
   const handleFavoriteToggle = async (productId, isFavorite) => {
-    await updateDoc(doc(db, "products", productId), {
-      isFavorite: !isFavorite,
-    });
+    // Обновляем состояние кнопки сразу
+    const updatedProducts = productsWithUrls.filter(
+      (product) => product.id !== productId
+    );
+    setProductsWithUrls(updatedProducts); // Убираем продукт из списка на UI
+
+    // Обновляем данные в Firebase
+    try {
+      await updateDoc(doc(db, "products", productId), {
+        isFavorite: !isFavorite,
+      });
+    } catch (error) {
+      console.error("Ошибка при обновлении избранного:", error);
+    }
   };
 
   const handleBasketToggle = async (productId, inBasket) => {
-    await updateDoc(doc(db, "products", productId), { inBasket: !inBasket });
+    // Обновляем состояние кнопки сразу
+    const updatedProducts = productsWithUrls.map((product) =>
+      product.id === productId ? { ...product, inBasket: !inBasket } : product
+    );
+    setProductsWithUrls(updatedProducts); // Обновляем UI немедленно
+
+    // Обновляем данные в Firebase
+    try {
+      await updateDoc(doc(db, "products", productId), {
+        inBasket: !inBasket,
+      });
+    } catch (error) {
+      console.error("Ошибка при обновлении корзины:", error);
+    }
   };
 
   const handleShareToggle = async (productId, isShared) => {
-    await updateDoc(doc(db, "products", productId), { isShared: !isShared });
+    // Обновляем состояние кнопки сразу
+    const updatedProducts = productsWithUrls.map((product) =>
+      product.id === productId ? { ...product, isShared: !isShared } : product
+    );
+    setProductsWithUrls(updatedProducts); // Обновляем UI немедленно
+
+    // Обновляем данные в Firebase
+    try {
+      await updateDoc(doc(db, "products", productId), { isShared: !isShared });
+    } catch (error) {
+      console.error("Ошибка при обновлении share:", error);
+    }
   };
 
   const filteredFavorites = productsWithUrls.filter(
