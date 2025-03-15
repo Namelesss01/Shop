@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import post from "../../assets/img/group7.jpg";
 import Product from "../../shared/product/Product";
 import Footer from "../../shared/footer/Footer";
-import { Auth } from "../../shared/authorization/Auth";
 import { Search } from "lucide-react";
+import { Auth } from "../../shared/authorization/Auth";
 import { Input } from "../../components/ui/input";
 
 const Home = () => {
