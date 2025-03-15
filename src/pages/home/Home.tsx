@@ -31,7 +31,7 @@ const Home = () => {
           <Product
             selectedCategory={selectedCategory}
             searchQuery={searchQuery}
-            />{" "}
+          />{" "}
           {/* Передаем searchQuery */}
         </div>
       </div>
