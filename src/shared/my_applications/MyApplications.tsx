@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "../../components/ui/button";
 import { ShoppingCart, Forward } from "lucide-react";
-import { useCollection, useAddDocument } from "../../hooks/useCollection"; // Импортируем хук для добавления документа
+import { useCollection } from "../../hooks/useCollection"; // Импортируем хук для добавления документа
+import { useDocument } from "../../hooks/useDocument";
 
 interface Order {
   id: string; // Уникальный идентификатор заказа
@@ -21,7 +22,7 @@ const MyApplications = () => {
   const { documents: orders, error } = useCollection("orders");
 
   // Хук для добавления нового заказа
-  const { addDocument, error: addError } = useAddDocument("orders");
+  const { addDocument, error: addError } = useDocument("orders");
 
   const [photoOrders, setPhotoOrders] = useState<string[][]>([]);
 

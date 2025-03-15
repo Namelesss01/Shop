@@ -14,16 +14,22 @@ interface Order {
   basketNumber: string;
   date: string;
   user: string;
-  items: number;
+  items: {
+    id: string;
+    name: string;
+    quantity: number;
+    price: number;
+    imageUrl: string;
+  }[];
   country: string;
-  status: string; // Статус заказа
+  status: string;
   сommission: string;
   order_amount: string;
   translation: string;
 }
 
 const Ordest = () => {
-  const { documents: orders, error } = useCollection("orders");
+  const { documents: orders, error, updateDocument } = useCollection("orders");
   const [activeTab, setActiveTab] = useState("news");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
@@ -31,12 +37,11 @@ const Ordest = () => {
   if (!orders)
     return <p className="text-center text-gray-500">Загрузка заказов...</p>;
 
-  // Фильтруем заказы по статусу
   const pendingOrders = orders.filter(
     (order) => order.status === "На рассмотрении"
   );
   const processedOrders = orders.filter(
-    (order) => order.status !== "На рассмотрении"
+    (order) => order.status === "Обработанные"
   );
 
   const handleRowClick = (order: Order) => {
@@ -44,11 +49,13 @@ const Ordest = () => {
     setActiveTab("Service");
   };
 
-  const handleConfirmPurchase = (orderId: string) => {
-    // Здесь можно добавить логику для обновления статуса заказа в Firestore
-    // Например, изменить статус на "Обработанные"
-    // После этого заказ автоматически переместится во вторую вкладку
-    console.log("Заказ подтвержден:", orderId);
+  const handleConfirmPurchase = async (orderId: string) => {
+    try {
+      await updateDocument(orderId, { status: "Обработанные" });
+      console.log("Заказ подтвержден и перемещен в обработанные:", orderId);
+    } catch (error) {
+      console.error("Ошибка при обновлении статуса заказа:", error);
+    }
   };
 
   return (
@@ -95,7 +102,9 @@ const Ordest = () => {
                       </td>
                       <td className="py-3 px-4 border-b">{order.date}</td>
                       <td className="py-3 px-4 border-b">{order.user}</td>
-                      <td className="py-3 px-4 border-b">{order.items}</td>
+                      <td className="py-3 px-4 border-b">
+                        {order.items.length}
+                      </td>
                       <td className="py-3 px-4 border-b">{order.country}</td>
                       <td className="py-3 px-4 border-b">{order.status}</td>
                     </tr>
@@ -176,18 +185,25 @@ const Ordest = () => {
                   <div className="mt-6 bg-white p-4 rounded-lg shadow">
                     <h3 className="text-lg font-medium">Товары</h3>
                     <div className="flex space-x-4 mt-4">
-                      {[1, 2, 3, 4, 5].map((_, index) => (
-                        <img
-                          key={index}
-                          src="/placeholder.jpg"
-                          alt="Product"
-                          className="w-24 h-32 object-cover rounded-lg border"
-                        />
+                      {selectedOrder.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex flex-col items-center"
+                        >
+                          <img
+                            src={item.imageUrl || "/placeholder.jpg"}
+                            alt={item.name}
+                            className="w-24 h-32 object-cover rounded-lg border"
+                          />
+                          <p className="mt-2 text-sm text-gray-700">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {item.quantity} шт.
+                          </p>
+                        </div>
                       ))}
                     </div>
-                    <p className="mt-2 text-gray-700">
-                      Описание товара: Платье голубое, размер 50-56.
-                    </p>
                   </div>
 
                   <div className="mt-6 bg-white p-4 rounded-lg shadow">
