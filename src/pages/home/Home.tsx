@@ -10,7 +10,7 @@ const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Все");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value); 
+    setSearchQuery(e.target.value);
   };
 
   return (
@@ -23,12 +23,15 @@ const Home = () => {
             <Search className="absolute left-4 md:left-7 w-5 h-5 text-gray-200" />
             <Input
               placeholder="Поиск товаров"
-              className="w-full rounded-3xl pl-10 md:pl-20" 
+              className="w-full rounded-3xl pl-10 md:pl-20"
               value={searchQuery}
               onChange={handleSearch}
             />
           </div>
-          <Product selectedCategory={selectedCategory} searchQuery={searchQuery} />
+          <Product
+            selectedCategory={selectedCategory}
+            searchQuery={searchQuery}
+          />{" "}
         </div>
       </div>
       <div className="mt-20"></div>
