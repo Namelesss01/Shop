@@ -9,10 +9,8 @@ import { Input } from "../../components/ui/input";
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("Все");
   const [searchQuery, setSearchQuery] = useState<string>("");
-
-  // Функция обработки ввода текста в поле поиска
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value); // Обновляем состояние поиска
+    setSearchQuery(e.target.value); 
   };
 
   return (
@@ -25,16 +23,15 @@ const Home = () => {
             <Search className="absolute left-4 md:left-7 w-5 h-5 text-gray-200" />
             <Input
               placeholder="Поиск товаров"
-              className="w-full rounded-3xl pl-10 md:pl-20" // изменим отступ в зависимости от разрешения
-              value={searchQuery} // Значение для поля поиска
-              onChange={handleSearch} // Функция для обновления searchQuery
+              className="w-full rounded-3xl pl-10 md:pl-20" 
+              value={searchQuery}
+              onChange={handleSearch}
             />
           </div>
-          <Product selectedCategory={selectedCategory} searchQuery={searchQuery} /> {/* Передаем searchQuery */}
+          <Product selectedCategory={selectedCategory} searchQuery={searchQuery} />
         </div>
       </div>
       <div className="mt-20"></div>
-      {/* Закрепленный Footer */}
       <Footer />
     </div>
   );
