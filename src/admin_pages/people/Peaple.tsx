@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import AdminAside from "../../shared/admin_aside/AdminAside";
 import AdminHeader from "../../shared/admin_header/AdminHeader";
+import { Users, User } from "lucide-react";
+
 import {
   Tabs,
   TabsList,
@@ -255,10 +257,28 @@ const People = () => {
         </div>
         <div className="flex flex-col w-full p-6">
           <Tabs defaultValue="users" className="w-full max-w-4xl">
-            <TabsList>
-              <TabsTrigger value="users">Список пользователей</TabsTrigger>
-              <TabsTrigger value="settings">Админы</TabsTrigger>
+            <TabsList className="flex justify-start gap-4 bg-gray-100 p-2 rounded-lg">
+              <TabsTrigger
+                className="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-lg px-6 py-4 transition 
+      data-[state=active]:bg-blue-500 data-[state=active]:text-white 
+      data-[state=inactive]:bg-white data-[state=inactive]:text-black hover:bg-gray-200"
+                value="users"
+              >
+                <Users className="w-6 h-6 text-gray-600 data-[state=active]:text-white" />
+                <span>Все Пользователи</span>
+              </TabsTrigger>
+
+              <TabsTrigger
+                className="flex flex-col items-center justify-center gap-2 border border-gray-300 rounded-lg px-6 py-4 transition 
+      data-[state=active]:bg-blue-500 data-[state=active]:text-white 
+      data-[state=inactive]:bg-white data-[state=inactive]:text-black hover:bg-gray-200"
+                value="settings"
+              >
+                <User className="w-6 h-6 text-gray-600 data-[state=active]:text-white" />
+                <span>Админы</span>
+              </TabsTrigger>
             </TabsList>
+
             <TabsContent value="users">
               <div className="w-full bg-white shadow-md rounded-2xl p-6 mb-5">
                 <div className="flex justify-between items-center">

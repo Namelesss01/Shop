@@ -1,4 +1,3 @@
-import React from "react";
 import AdminAside from "../../shared/admin_aside/AdminAside";
 import AdminHeader from "../../shared/admin_header/AdminHeader";
 import {
@@ -6,7 +5,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "../../components/ui/tabs"; // Предположим, что у вас есть компонент Tabs
+} from "../../components/ui/tabs";
 
 const BuyList = () => {
   const orders = [
@@ -173,7 +172,7 @@ const BuyList = () => {
         <AdminAside />
 
         <div className="flex-1">
-          <Tabs defaultValue="orders">
+          <Tabs defaultValue="news">
             <TabsList>
               <TabsTrigger value="news">Новые</TabsTrigger>
               <TabsTrigger value="Service">Обслуживание</TabsTrigger>
@@ -243,7 +242,72 @@ const BuyList = () => {
                 </tbody>
               </table>
             </TabsContent>
-            <TabsContent value="Service">q2323we</TabsContent>
+            <TabsContent value="Service">
+              <div className="max-w-[600px] mx-auto p-5 border border-gray-300 rounded-lg bg-gray-50">
+
+                <div className="mb-6">
+                  <h1 className="text-2xl font-bold mb-2">
+                    9 проход 410 контейнер
+                  </h1>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>Артикулов: 5</p>
+                    <p>Дата: 22.04.2025</p>
+                    <p>Страна: Россия, Казахстан</p>
+                    <p>Связь: Telegram: @marleno</p>
+                    <p>WhatsApp: +99670700433</p>
+                  </div>
+                </div>
+
+                <div className="mb-6 p-4 bg-gray-200 rounded-lg">
+                  <h2 className="text-lg font-semibold mb-2">Сумма закупа</h2>
+                  <p className="font-bold">KGS</p>
+                  <p>Закуп завершен</p>
+                </div>
+
+                {/* Артикул */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold">Артикул: 32345</h3>
+                  <p className="text-sm text-gray-600">
+                    Дата рассылки: 22.01.2025
+                  </p>
+                </div>
+
+                {/* Описание товара */}
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-2">
+                    Описание товара
+                  </h3>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>
+                      Повторное{" "}
+                      <a href="#" className="text-blue-500 hover:underline">
+                        Допучили <strong>ФИО</strong>
+                      </a>
+                    </p>
+                    <p>Город ФИО</p>
+                    <p>Размерный ряд 49/54</p>
+                    <p>Цена ТВО</p>
+                    <p>Ткань Корейский Сигнал</p>
+                    <p>Качество хорошее люкс</p>
+                    <p>Посадка хорошо сушит</p>
+                    <p>
+                      1.3 расцветок в наличии <strong>ФИО</strong>
+                    </p>
+                    <p>Количество ограничений III</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">
+                    Комментарий покупателя
+                  </h3>
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <p>Нужно по три пачки каждого цвета</p>
+                    <p>Размерный ряд: 50-56</p>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
           </Tabs>
         </div>
       </div>

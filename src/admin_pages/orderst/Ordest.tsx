@@ -7,7 +7,6 @@ import {
   TabsTrigger,
   TabsContent,
 } from "../../components/ui/tabs";
-import { useCollection } from "../../hooks/useCollection";
 
 interface Order {
   id: string;
@@ -28,14 +27,152 @@ interface Order {
   translation: string;
 }
 
+const orders: Order[] = [
+  {
+    id: "1",
+    basketNumber: "№512",
+    date: "22 Oct, 2020",
+    user: "Jane Cooper",
+    items: [
+      { id: "item1", name: "Товар 1", quantity: 2, price: 100, imageUrl: "" },
+    ],
+    country: "Åland Islands",
+    status: "На рассмотрении",
+    сommission: "0%",
+    order_amount: "0.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "2",
+    basketNumber: "№513",
+    date: "24 May, 2020",
+    user: "Jacob Jones",
+    items: [
+      { id: "item2", name: "Товар 2", quantity: 3, price: 150, imageUrl: "" },
+    ],
+    country: "Greece",
+    status: "Обработанные",
+    сommission: "5%",
+    order_amount: "450.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "3",
+    basketNumber: "№514",
+    date: "15 Jun, 2021",
+    user: "John Doe",
+    items: [
+      { id: "item3", name: "Товар 3", quantity: 1, price: 200, imageUrl: "" },
+    ],
+    country: "Germany",
+    status: "На рассмотрении",
+    сommission: "0%",
+    order_amount: "0.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "4",
+    basketNumber: "№515",
+    date: "30 Aug, 2021",
+    user: "Alice Smith",
+    items: [
+      { id: "item4", name: "Товар 4", quantity: 4, price: 50, imageUrl: "" },
+    ],
+    country: "France",
+    status: "Обработанные",
+    сommission: "3%",
+    order_amount: "200.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "5",
+    basketNumber: "№516",
+    date: "12 Dec, 2021",
+    user: "Bob Johnson",
+    items: [
+      { id: "item5", name: "Товар 5", quantity: 2, price: 300, imageUrl: "" },
+    ],
+    country: "Italy",
+    status: "На рассмотрении",
+    сommission: "0%",
+    order_amount: "0.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "6",
+    basketNumber: "№517",
+    date: "05 Jan, 2022",
+    user: "Charlie Brown",
+    items: [
+      { id: "item6", name: "Товар 6", quantity: 5, price: 100, imageUrl: "" },
+    ],
+    country: "Spain",
+    status: "Обработанные",
+    сommission: "2%",
+    order_amount: "500.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "7",
+    basketNumber: "№518",
+    date: "20 Feb, 2022",
+    user: "Eva Green",
+    items: [
+      { id: "item7", name: "Товар 7", quantity: 3, price: 150, imageUrl: "" },
+    ],
+    country: "Portugal",
+    status: "На рассмотрении",
+    сommission: "0%",
+    order_amount: "0.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "8",
+    basketNumber: "№519",
+    date: "10 Mar, 2022",
+    user: "Frank White",
+    items: [
+      { id: "item8", name: "Товар 8", quantity: 2, price: 250, imageUrl: "" },
+    ],
+    country: "Netherlands",
+    status: "Обработанные",
+    сommission: "4%",
+    order_amount: "500.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "9",
+    basketNumber: "№520",
+    date: "25 Apr, 2022",
+    user: "Grace Black",
+    items: [
+      { id: "item9", name: "Товар 9", quantity: 1, price: 400, imageUrl: "" },
+    ],
+    country: "Belgium",
+    status: "На рассмотрении",
+    сommission: "0%",
+    order_amount: "0.00",
+    translation: "Подтвержден",
+  },
+  {
+    id: "10",
+    basketNumber: "№521",
+    date: "15 May, 2022",
+    user: "Henry Green",
+    items: [
+      { id: "item10", name: "Товар 10", quantity: 3, price: 120, imageUrl: "" },
+    ],
+    country: "Switzerland",
+    status: "Обработанные",
+    сommission: "6%",
+    order_amount: "360.00",
+    translation: "Подтвержден",
+  },
+];
+
 const Ordest = () => {
-  const { documents: orders, error, updateDocument } = useCollection("orders");
   const [activeTab, setActiveTab] = useState("news");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-
-  if (error) return <p className="text-center text-red-500">Ошибка: {error}</p>;
-  if (!orders)
-    return <p className="text-center text-gray-500">Загрузка заказов...</p>;
 
   const pendingOrders = orders.filter(
     (order) => order.status === "На рассмотрении"
@@ -49,30 +186,37 @@ const Ordest = () => {
     setActiveTab("Service");
   };
 
-  const handleConfirmPurchase = async (orderId: string) => {
-    try {
-      await updateDocument(orderId, { status: "Обработанные" });
-      console.log("Заказ подтвержден и перемещен в обработанные:", orderId);
-    } catch (error) {
-      console.error("Ошибка при обновлении статуса заказа:", error);
-    }
-  };
-
   return (
-    <div className="">
+    <div>
       <AdminHeader />
       <div className="flex">
         <AdminAside />
 
-        <div className="">
+        <div>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList>
-              <TabsTrigger value="news">Новые</TabsTrigger>
-              <TabsTrigger value="Service">Обслуживание</TabsTrigger>
-              <TabsTrigger value="Processed">Обработанные</TabsTrigger>
+            <TabsList className="flex justify-start mt-4 ml-4 gap-4">
+              <TabsTrigger
+                value="news"
+                className="px-6 py-2 border border-gray-300 rounded-lg transition data-[state=active]:bg-[#FF9500] data-[state=active]:text-white"
+              >
+                Новые
+              </TabsTrigger>
+              <TabsTrigger
+                value="Service"
+                className="px-6 py-2 border border-gray-300 rounded-lg transition data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+              >
+                Обслуживание
+              </TabsTrigger>
+              <TabsTrigger
+                value="Processed"
+                className="px-6 py-2 border border-gray-300 rounded-lg transition data-[state=active]:bg-blue-500 data-[state=active]:text-white"
+              >
+                Обработанные
+              </TabsTrigger>
             </TabsList>
+
             <TabsContent
-              className="bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl"
+              className="bg-white shadow-md p-6 mt-4 rounded-2xl ml-5"
               value="news"
             >
               <table className="min-w-full bg-white border border-gray-200">
@@ -85,13 +229,12 @@ const Ordest = () => {
                     <th className="py-3 px-4 border-b text-left">
                       Пользователь
                     </th>
-                    <th className="py-3 px-4 border-b text-left">Позиции</th>
                     <th className="py-3 px-4 border-b text-left">Страна</th>
                     <th className="py-3 px-4 border-b text-left">Статус</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {pendingOrders.map((order: Order) => (
+                  {pendingOrders.map((order) => (
                     <tr
                       key={order.id}
                       className="hover:bg-gray-50 cursor-pointer"
@@ -102,9 +245,6 @@ const Ordest = () => {
                       </td>
                       <td className="py-3 px-4 border-b">{order.date}</td>
                       <td className="py-3 px-4 border-b">{order.user}</td>
-                      <td className="py-3 px-4 border-b">
-                        {order.items.length}
-                      </td>
                       <td className="py-3 px-4 border-b">{order.country}</td>
                       <td className="py-3 px-4 border-b">{order.status}</td>
                     </tr>
@@ -112,8 +252,9 @@ const Ordest = () => {
                 </tbody>
               </table>
             </TabsContent>
+
             <TabsContent
-              className="bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl"
+              className="bg-white shadow-md p-6 mt-4 rounded-2xl ml-5"
               value="Processed"
             >
               <table className="min-w-full bg-white border border-gray-200">
@@ -130,11 +271,10 @@ const Ordest = () => {
                     <th className="py-3 px-4 border-b text-left">
                       Сумма заказа
                     </th>
-                    <th className="py-3 px-4 border-b text-left">Перевод ДС</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {processedOrders.map((order: Order) => (
+                  {processedOrders.map((order) => (
                     <tr key={order.id} className="hover:bg-gray-50">
                       <td className="py-3 px-4 border-b">
                         {order.basketNumber}
@@ -145,20 +285,18 @@ const Ordest = () => {
                       <td className="py-3 px-4 border-b">
                         {order.order_amount}
                       </td>
-                      <td className="py-3 px-4 border-b">
-                        {order.translation}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </TabsContent>
+
             <TabsContent
-              className="bg-white shadow-md pl-6 pr-4 py-6 mt-4 ml-4 rounded-2xl"
+              className="bg-white shadow-md p-6 mt-4 rounded-2xl ml-5"
               value="Service"
             >
               {selectedOrder && (
-                <div className="p-6 bg-gray-100 rounded-lg">
+                <div>
                   <h2 className="text-xl font-semibold mb-4">
                     Корзина № {selectedOrder.basketNumber}
                   </h2>
@@ -174,68 +312,12 @@ const Ordest = () => {
                   <p className="text-gray-700">
                     Сумма заказа: <strong>{selectedOrder.order_amount}</strong>
                   </p>
-                  <p className="text-gray-700">
-                    Комиссия: <strong>{selectedOrder.сommission}</strong>
-                  </p>
-                  <p className="text-gray-700">
-                    Итоговая сумма:{" "}
-                    <strong>{selectedOrder.order_amount}</strong>
-                  </p>
-
-                  <div className="mt-6 bg-white p-4 rounded-lg shadow">
-                    <h3 className="text-lg font-medium">Товары</h3>
-                    <div className="flex space-x-4 mt-4">
-                      {selectedOrder.items.map((item) => (
-                        <div
-                          key={item.id}
-                          className="flex flex-col items-center"
-                        >
-                          <img
-                            src={item.imageUrl || "/placeholder.jpg"}
-                            alt={item.name}
-                            className="w-24 h-32 object-cover rounded-lg border"
-                          />
-                          <p className="mt-2 text-sm text-gray-700">
-                            {item.name}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {item.quantity} шт.
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-6 bg-white p-4 rounded-lg shadow">
-                    <h3 className="text-lg font-medium">
-                      Комментарии покупателя
-                    </h3>
-                    <p className="text-gray-700">
-                      Нужно по три на каждую позицию. Размерный ряд: 50-56.
-                    </p>
-                  </div>
-
-                  <div className="mt-6 bg-white p-4 rounded-lg shadow">
-                    <h3 className="text-lg font-medium">Контакты</h3>
-                    <p className="text-gray-700">WhatsApp: +99670700433</p>
-                    <p className="text-gray-700">Telegram: @marleno</p>
-                  </div>
-
                   <div className="mt-6 flex space-x-4">
-                    <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-                      На рассмотрение
-                    </button>
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded-lg"
-                      onClick={() => handleConfirmPurchase(selectedOrder.id)}
-                    >
+                    <button className="bg-green-500 text-white px-4 py-2 rounded-lg">
                       Подтвердить закуп
                     </button>
-                    <button className="bg-orange-500 text-white px-4 py-2 rounded-lg">
-                      Отмена заказа
-                    </button>
                     <button className="bg-red-500 text-white px-4 py-2 rounded-lg">
-                      Удалить из корзины
+                      Удалить
                     </button>
                   </div>
                 </div>

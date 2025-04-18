@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Home from "./pages/home/Home";
 import Basket from "./pages/busket/Basket";
 import Footer from "./shared/footer/Footer";
@@ -17,6 +17,17 @@ import BuyList from "./admin_pages/buy_list/BuyList";
 import Bots from "./admin_pages/bots/Bots";
 
 const App = () => {
+  const location = useLocation();
+
+  // Массив страниц, где не должен отображаться Footer
+  const noFooterPages = [
+    "/dashboard",
+    "/buy_list",
+    "/bots",
+    "/orderst",
+    "/peaple",
+  ];``
+
   return (
     <div className="App">
       <Routes>
@@ -28,14 +39,16 @@ const App = () => {
         <Route path="/oferta" element={<Oferta />} />
         <Route path="/addfile" element={<AddFile />} />
         <Route path="/admin_header" element={<AdminHeader />} />
-        <Route path="Dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/admin_aside" element={<AdminAside />} />
         <Route path="/peaple" element={<Peaple />} />
-        <Route path="orderst" element={<Ordest />} />
+        <Route path="/orderst" element={<Ordest />} />
         <Route path="/buy_list" element={<BuyList />} />
         <Route path="/bots" element={<Bots />} />
       </Routes>
-      <Footer />
+
+      {/* Показываем Footer только если текущая страница не в массиве noFooterPages */}
+      {!noFooterPages.includes(location.pathname) && <Footer />}
     </div>
   );
 };
